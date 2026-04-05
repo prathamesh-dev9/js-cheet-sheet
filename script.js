@@ -395,7 +395,9 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     topic: "promise",
     tags: ["core"],
     q: "What is a Promise? (Definition)",
-    a: `&bull; <span class="highlight">Placeholder</span> for a value that will be available in the future.
+    a: `
+    &bull; The <b>Promise</b> object represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
+    <br /> &bull; <span class="highlight">Placeholder</span> for a value that will be available in the future.
     <br /> &bull; <span class="highlight">Immutable object</span> representing eventual completion/failure.
     <br /> &bull; Provides a <b>trustworthy</b> way to handle asynchronicity without inversion of control.`,
   },
@@ -447,8 +449,8 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     topic: "promise",
     tags: ["core", "gotcha"],
     q: "Error Handling (The Catch Block)?",
-    a: `&bull; <code>.catch()</code> handles errors in the <b>entire chain above it</b>.<br>
-    <br /> &bull; You can place it anywhere! If placed in the middle, it only catches errors <i>above</i> and passes the result <i>down</i>.<br>
+    a: `&bull; <code>.catch()</code> handles errors in the <b>entire chain above it</b>.
+    <br /> &bull; You can place it anywhere! If placed in the middle, it only catches errors <i>above</i> and passes the result <i>down</i>.
     <br /> &bull; Always return something from <code>.then()</code> to keep the chain alive.`,
   },
 
@@ -456,9 +458,9 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     topic: "promise",
     tags: ["core"],
     q: "Promise APIs & key methods?",
-    a: `&bull; <code>Promise.all([])</code> — waits for all, <span class="danger-text">fails fast</span> on rejection<br>
-    <br /> &bull; <code>Promise.allSettled([])</code> — waits for all, <span class="highlight">never rejects</span><br>
-    <br /> &bull; <code>Promise.race([])</code> — resolves/rejects with first settled<br>
+    a: `&bull; <code>Promise.all([])</code> — waits for all, <span class="danger-text">fails fast</span> on rejection
+    <br /> &bull; <code>Promise.allSettled([])</code> — waits for all, <span class="highlight">never rejects</span>
+    <br /> &bull; <code>Promise.race([])</code> — resolves/rejects with first settled
     <br /> &bull; <code>Promise.any([])</code> — resolves with first fulfilled`,
   },
 
@@ -466,11 +468,12 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     topic: "promise",
     tags: ["core", "gotcha"],
     q: "async/await — how it works & common mistakes?",
-    a: `&bull; <code>async fn</code> always returns a Promise<br>
-    <br /> &bull; <code>await</code> pauses <b>only that fn</b>, not the thread<br>
-    <br /> &bull; Syntactic sugar over <code>.then()</code> chains<br>
-    <br /> &bull; Use <code>try/catch</code> for error handling<br>
-    <span class="warn-text">Mistake:</span> Forgetting <code>await</code> → get Promise object, not value<br>
+    a: `
+    &bull; <code>async fn</code> always returns a Promise
+    <br /> &bull; <code>await</code> pauses <b>only that fn</b>, not the thread
+    <br /> &bull; Syntactic sugar over <code>.then()</code> chains
+    <br /> &bull; Use <code>try/catch</code> for error handling
+    <span class="warn-text">Mistake:</span> Forgetting <code>await</code> → get Promise object, not value
     <span class="warn-text">Mistake:</span> <code>await</code> in forEach doesn't work — use <code>for...of</code> loop`,
   },
 
@@ -487,9 +490,9 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     topic: "fns",
     tags: ["core"],
     q: "Pure function?",
-    a: `&bull; Same input → always same output<br>
-    <br /> &bull; No side effects (no mutation of external state, no console.log, no API calls)<br>
-    <br /> &bull; Easier to test, cache, and reason about<br>
+    a: `&bull; Same input → always same output
+    <br /> &bull; No side effects (no mutation of external state, no console.log, no API calls)
+    <br /> &bull; Easier to test, cache, and reason about
     <b>Examples:</b> <code>Math.max()</code>, <code>Array.map()</code>`,
   },
 
@@ -523,8 +526,8 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     topic: "fns",
     tags: ["core"],
     q: "Parameters vs Arguments?",
-    a: `&bull; <b>Parameters</b>: variables listed in the function <span class="highlight">definition</span>.<br>
-    <br /> &bull; <b>Arguments</b>: actual values <span class="highlight">passed</span> to the function when calling it.<br>
+    a: `&bull; <b>Parameters</b>: variables listed in the function <span class="highlight">definition</span>.
+    <br /> &bull; <b>Arguments</b>: actual values <span class="highlight">passed</span> to the function when calling it.
     <div class="code-block"><span class="kw">function</span> <span class="fn">sum</span>(a, b) {
   <span class="cm">/* a, b are params */</span>
 }
@@ -546,8 +549,8 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     topic: "callback",
     tags: ["core"],
     q: "Advantages of Callback Functions?",
-    a: `&bull; <span class="highlight">Powers Asynchronicity</span> — allow JS (single-threaded) to handle non-blocking tasks.<br>
-    <br /> &bull; <span class="highlight">Deferred Execution</span> — control exactly when a piece of code should run (after events/timers).<br>
+    a: `&bull; <span class="highlight">Powers Asynchronicity</span> — allow JS (single-threaded) to handle non-blocking tasks.
+    <br /> &bull; <span class="highlight">Deferred Execution</span> — control exactly when a piece of code should run (after events/timers).
     <br /> &bull; <span class="highlight">Modular/Functional Design</span> — lets us pass generic logic that others can specialize.`,
   },
 
@@ -555,9 +558,9 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     topic: "callback",
     tags: ["gotcha", "core"],
     q: "What is Callback Hell (Pyramid of Doom)?",
-    a: `When asynchronous operations are nested inside each other, creating a structure that grows <b>horizontally</b>.<br>
-    <br /> &bull; <span class="danger-text">Hard to Read</span>: logic is buried deep in nesting.<br>
-    <br /> &bull; <span class="danger-text">Hard to Maintain</span>: tiny changes require restructuring everything.<br>
+    a: `When asynchronous operations are nested inside each other, creating a structure that grows <b>horizontally</b>.
+    <br /> &bull; <span class="danger-text">Hard to Read</span>: logic is buried deep in nesting.
+    <br /> &bull; <span class="danger-text">Hard to Maintain</span>: tiny changes require restructuring everything.
     <div class="code-block"><span class="fn">api.createOrder</span>(cart, () =&gt; {
   <span class="fn">api.proceedToPayment</span>(() =&gt; {
     <span class="fn">api.showOrderSummary</span>(() =&gt; {
@@ -584,8 +587,8 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     topic: "callback",
     tags: ["core"],
     q: "Synchronous vs Asynchronous Callbacks?",
-    a: `Not all callbacks are async! Some run <span class="highlight">immediately</span> (blocking).<br>
-    <br /> &bull; <b>Synchronous:</b> <code>[].map()</code>, <code>[].filter()</code>, <code>[].forEach()</code>.<br>
+    a: `Not all callbacks are async! Some run <span class="highlight">immediately</span> (blocking).
+    <br /> &bull; <b>Synchronous:</b> <code>[].map()</code>, <code>[].filter()</code>, <code>[].forEach()</code>.
     <br /> &bull; <b>Asynchronous:</b> <code>setTimeout</code>, <code>fetch</code>, <code>addEventListener</code>.`,
   },
 
