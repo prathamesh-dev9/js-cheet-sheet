@@ -6,6 +6,8 @@ const TOPICS = [
   { id: "proto", label: "Prototype", color: "#6ee7b7" },
   { id: "async", label: "Async & Event Loop", color: "#f87171" },
   { id: "fns", label: "Functions", color: "#818cf8" },
+  { id: "callback", label: "Callbacks", color: "#6366f1" },
+  { id: "promise", label: "Promises", color: "#f59e0b" },
   { id: "array", label: "Array Methods", color: "#fbbf24" },
   { id: "obj", label: "Objects", color: "#60a5fa" },
   { id: "misc", label: "JS Concepts", color: "#f472b6" },
@@ -18,22 +20,22 @@ const DATA = [
     topic: "ec",
     tags: ["core"],
     q: "What is an Execution Context?",
-    a: `Container where JS code is evaluated & executed. Has <b>2 parts</b>:<br>
-    &bull; <span class="highlight">Memory (Variable Env)</span> — stores vars/fns as key:value pairs<br>
-    &bull; <span class="highlight">Code (Thread of Execution)</span> — runs one line at a time<br>
-    Types: <b>Global EC</b> (on page load) &bull; <b>Function EC</b> (per function call)`,
+    a: `Container where JS code is evaluated & executed. Has <b>2 parts</b>:
+    <br /> &bull; <span class="highlight">Memory (Variable Env)</span> — stores vars/fns as key:value pairs
+    <br /> &bull; <span class="highlight">Code (Thread of Execution)</span> — runs one line at a time
+    <br /> Types: <b>Global EC</b> (on page load) <br /> &bull; <b>Function EC</b> (per function call)`,
   },
 
   {
     topic: "ec",
     tags: ["core"],
     q: "2 phases of Execution Context creation?",
-    a: `<b>Phase 1 — Memory Creation:</b><br>
-    &bull; <code>var</code> → set to <code>undefined</code><br>
-    &bull; Functions → stored fully (whole body)<br>
-    <b>Phase 2 — Code Execution:</b><br>
-    &bull; Runs line by line, vars get actual values<br>
-    &bull; This 2-phase process is the root cause of <span class="warn-text">Hoisting</span>`,
+    a: `<b>Phase 1 — Memory Creation:</b>
+    <br /> &bull; <code>var</code> → set to <code>undefined</code>
+    <br /> &bull; Functions → stored fully (whole body)
+    <br /> <b>Phase 2 — Code Execution:</b>
+    <br /> &bull; Runs line by line, vars get actual values
+    <br /> &bull; This 2-phase process is the root cause of <span class="warn-text">Hoisting</span>`,
   },
 
   {
@@ -41,19 +43,19 @@ const DATA = [
     tags: ["core"],
     q: "JS is synchronous single-threaded — what does it mean?",
     a: `&bull; <span class="highlight">Single-threaded</span>: only 1 command at a time<br>
-    &bull; <span class="highlight">Synchronous</span>: commands run in a fixed, specific order<br>
-    &bull; Managed by the <b>Call Stack</b> — GEC at bottom, function ECs pushed/popped on top`,
+    <br /> &bull; <span class="highlight">Synchronous</span>: commands run in a fixed, specific order<br>
+    <br /> &bull; Managed by the <b>Call Stack</b> — GEC at bottom, function ECs pushed/popped on top`,
   },
 
   {
     topic: "hoist",
     tags: ["core", "gotcha"],
     q: "What is Hoisting?",
-    a: `Memory is allocated for vars & fns <b>before code runs</b>.<br>
-    &bull; <code>var</code> → hoisted, initialized as <code>undefined</code><br>
-    &bull; <code>function foo(){}</code> → hoisted <span class="highlight">fully</span>, callable anywhere<br>
-    &bull; <code>let</code> / <code>const</code> → hoisted but in <span class="warn-text">TDZ</span> — accessing throws <code>ReferenceError</code><br>
-    &bull; <code>const foo = function(){}</code> → only <code>foo hoisted as <code>undefined</code>`,
+    a: `Memory is allocated for vars & fns <b>before code runs</b>.
+    <br /> &bull; <code>var</code> → hoisted, initialized as <code>undefined</code>
+    <br /> &bull; <code>function foo(){}</code> → hoisted <span class="highlight">fully</span>, callable anywhere
+    <br /> &bull; <code>let</code> / <code>const</code> → hoisted but in <span class="warn-text">TDZ</span> — accessing throws <code>ReferenceError</code>
+    <br /> &bull; <code>const foo = function(){}</code> → only <code>foo hoisted as <code>undefined</code>`,
   },
 
   {
@@ -243,9 +245,9 @@ sayHi = () =&gt; { console.log(<span class="kw">this</span>.name); }</div>`,
     tags: ["core"],
     q: "call() vs apply() vs bind() ?",
     a: `All 3 explicitly set <code>this</code>:
-    &bull; <code>fn.call(obj, a, b)</code> — invokes <span class="highlight">immediately</span>, args comma-separated.
-    &bull; <code>fn.apply(obj, [a, b])</code> — invokes <span class="highlight">immediately</span>, args as array.
-    &bull; <code>fn.bind(obj)</code> — returns <span class="warn-text">new function</span>, can be invoked later.
+    <br /> &bull; <code>fn.call(obj, a, b)</code> — invokes <span class="highlight">immediately</span>, args comma-separated.
+    <br /> &bull; <code>fn.apply(obj, [a, b])</code> — invokes <span class="highlight">immediately</span>, args as array.
+    <br /> &bull; <code>fn.bind(obj)</code> — returns <span class="warn-text">new function</span>, can be invoked later.
     <b>Memory trick:</b> <b>A</b>pply = <b>A</b>rray.`,
   },
 
@@ -321,10 +323,10 @@ fn();          <span class="cm">// 2?</span></div>
     topic: "proto",
     tags: ["core"],
     q: "Class syntax vs Prototype — what's the relation?",
-    a: `Classes are <span class="highlight">syntactic sugar</span> over prototypes.<br>
-    &bull; Methods in class → added to <code>ClassName.prototype</code><br>
-    &bull; <code>extends</code> sets: <code>Child.prototype.__proto__ === Parent.prototype</code><br>
-    &bull; <code>super()</code> calls the parent constructor<br>
+    a: `Classes are <span class="highlight">syntactic sugar</span> over prototypes.
+    <br /> &bull; Methods in class → added to <code>ClassName.prototype</code>
+    <br /> &bull; <code>extends</code> sets: <code>Child.prototype.__proto__ === Parent.prototype</code>
+    <br /> &bull; <code>super()</code> calls the parent constructor
     <b>JS is prototype-based, not class-based under the hood</b>`,
   },
 
@@ -347,8 +349,8 @@ fn();          <span class="cm">// 2?</span></div>
     tags: ["core"],
     q: "Microtask vs Macrotask?",
     a: `&bull; <span class="highlight">Microtasks</span>: Promises (.then/.catch/finally), <code>queueMicrotask</code>, <code>MutationObserver</code>.
-    &bull; <span class="highlight">Macrotasks</span>: <code>setTimeout</code>, <code>setInterval</code>, I/O, UI rendering events.
-    &bull; <span class="warn-text">Key priority:</span> ALL pending microtasks are drained before ONE macrotask is executed.`,
+    <br /> &bull; <span class="highlight">Macrotasks</span>: <code>setTimeout</code>, <code>setInterval</code>, I/O, UI rendering events.
+    <br /> &bull; <span class="warn-text">Key priority:</span> ALL pending microtasks are drained before ONE macrotask is executed.`,
   },
 
   {
@@ -356,8 +358,8 @@ fn();          <span class="cm">// 2?</span></div>
     tags: ["gotcha"],
     q: "Microtask Starvation?",
     a: `If a microtask recursively adds more microtasks, the engine <b>never reaches the macrotask or rendering</b>.
-    &bull; <span class="danger-text">Result:</span> Use for complex heavy recursion can freeze the UI completely.
-    &bull; Macrotasks (like <code>setTimeout</code>) only run ONE per loop, allowing the renderer to "breathe".`,
+    <br /> &bull; <span class="danger-text">Result:</span> Use for complex heavy recursion can freeze the UI completely.
+    <br /> &bull; Macrotasks (like <code>setTimeout</code>) only run ONE per loop, allowing the renderer to "breathe".`,
   },
 
   {
@@ -389,25 +391,84 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
   },
 
   {
-    topic: "async",
+    topic: "promise",
     tags: ["core"],
-    q: "Promise states & key methods?",
-    a: `<b>3 states:</b> <code>pending</code> → <code>fulfilled</code> or <code>rejected</code> (immutable once settled)<br>
-    &bull; <code>.then(onFulfill)</code> &bull; <code>.catch(onReject)</code> &bull; <code>.finally(fn)</code><br>
-    &bull; <code>Promise.all([])</code> — waits for all, <span class="danger-text">fails fast</span> on rejection<br>
-    &bull; <code>Promise.allSettled([])</code> — waits for all, <span class="highlight">never rejects</span><br>
-    &bull; <code>Promise.race([])</code> — resolves/rejects with first settled<br>
-    &bull; <code>Promise.any([])</code> — resolves with first fulfilled`,
+    q: "What is a Promise? (Definition)",
+    a: `&bull; <span class="highlight">Placeholder</span> for a value that will be available in the future.
+    <br /> &bull; <span class="highlight">Immutable object</span> representing eventual completion/failure.
+    <br /> &bull; Provides a <b>trustworthy</b> way to handle asynchronicity without inversion of control.`,
   },
 
   {
-    topic: "async",
+    topic: "promise",
+    tags: ["core"],
+    q: "How Promises solve Inversion of Control?",
+    a: `Instead of passing a callback to a 3rd party API, that API <b>returns a Promise object</b>.<br>
+    We now attach our callback to <i>this</i> object. Control stays with us!<br>
+    <b>Trust:</b> The promise handles execution (exactly once, even if called before/after).`,
+  },
+
+  {
+    topic: "promise",
+    tags: ["core"],
+    q: "3 States of a Promise?",
+    a: `1. <span class="highlight">Pending</span> &mdash; initial state, not yet fulfilled or rejected.<br>
+    2. <span class="highlight">Fulfilled</span> &mdash; operation completed successfully.<br>
+    3. <span class="highlight">Rejected</span> &mdash; operation failed.<br>
+    Once <b>settled</b> (fulfilled/rejected), a promise is <span class="warn-text">Immutable</span>.`,
+  },
+
+  {
+    topic: "promise",
+    tags: ["core"],
+    q: "Creating a Promise (Constructor)?",
+    a: `<div class="code-block"><span class="kw">const</span> cart = [<span class="str">'shoes'</span>, <span class="str">'pants'</span>];
+<span class="kw">const</span> pr = <span class="kw">new</span> <span class="fn">Promise</span>((resolve, reject) =&gt; {
+  <span class="kw">if</span> (!validateCart(cart)) {
+    <span class="fn">reject</span>(<span class="kw">new</span> <span class="fn">Error</span>(<span class="str">'Invalid Cart'</span>));
+  }
+  <span class="fn">resolve</span>(<span class="str">'OrderCreated'</span>);
+});</div>`,
+  },
+
+  {
+    topic: "promise",
+    tags: ["core"],
+    q: "Promise Chaining (Solving Callback Hell)?",
+    a: `Every <code>.then()</code> returns a <b>new Promise</b>, allowing flat, readable chains.<br>
+    <div class="code-block"><span class="fn">createOrder</span>(cart)
+  .<span class="fn">then</span>(orderId =&gt; <span class="fn">proceedToPayment</span>(orderId))
+  .<span class="fn">then</span>(status =&gt; <span class="fn">showSummary</span>(status))
+  .<span class="fn">catch</span>(err =&gt; console.<span class="fn">log</span>(err));</div>`,
+  },
+
+  {
+    topic: "promise",
+    tags: ["core", "gotcha"],
+    q: "Error Handling (The Catch Block)?",
+    a: `&bull; <code>.catch()</code> handles errors in the <b>entire chain above it</b>.<br>
+    <br /> &bull; You can place it anywhere! If placed in the middle, it only catches errors <i>above</i> and passes the result <i>down</i>.<br>
+    <br /> &bull; Always return something from <code>.then()</code> to keep the chain alive.`,
+  },
+
+  {
+    topic: "promise",
+    tags: ["core"],
+    q: "Promise APIs & key methods?",
+    a: `&bull; <code>Promise.all([])</code> — waits for all, <span class="danger-text">fails fast</span> on rejection<br>
+    <br /> &bull; <code>Promise.allSettled([])</code> — waits for all, <span class="highlight">never rejects</span><br>
+    <br /> &bull; <code>Promise.race([])</code> — resolves/rejects with first settled<br>
+    <br /> &bull; <code>Promise.any([])</code> — resolves with first fulfilled`,
+  },
+
+  {
+    topic: "promise",
     tags: ["core", "gotcha"],
     q: "async/await — how it works & common mistakes?",
     a: `&bull; <code>async fn</code> always returns a Promise<br>
-    &bull; <code>await</code> pauses <b>only that fn</b>, not the thread<br>
-    &bull; Syntactic sugar over <code>.then()</code> chains<br>
-    &bull; Use <code>try/catch</code> for error handling<br>
+    <br /> &bull; <code>await</code> pauses <b>only that fn</b>, not the thread<br>
+    <br /> &bull; Syntactic sugar over <code>.then()</code> chains<br>
+    <br /> &bull; Use <code>try/catch</code> for error handling<br>
     <span class="warn-text">Mistake:</span> Forgetting <code>await</code> → get Promise object, not value<br>
     <span class="warn-text">Mistake:</span> <code>await</code> in forEach doesn't work — use <code>for...of</code> loop`,
   },
@@ -426,8 +487,8 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     tags: ["core"],
     q: "Pure function?",
     a: `&bull; Same input → always same output<br>
-    &bull; No side effects (no mutation of external state, no console.log, no API calls)<br>
-    &bull; Easier to test, cache, and reason about<br>
+    <br /> &bull; No side effects (no mutation of external state, no console.log, no API calls)<br>
+    <br /> &bull; Easier to test, cache, and reason about<br>
     <b>Examples:</b> <code>Math.max()</code>, <code>Array.map()</code>`,
   },
 
@@ -462,7 +523,7 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     tags: ["core"],
     q: "Parameters vs Arguments?",
     a: `&bull; <b>Parameters</b>: variables listed in the function <span class="highlight">definition</span>.<br>
-    &bull; <b>Arguments</b>: actual values <span class="highlight">passed</span> to the function when calling it.<br>
+    <br /> &bull; <b>Arguments</b>: actual values <span class="highlight">passed</span> to the function when calling it.<br>
     <div class="code-block"><span class="kw">function</span> <span class="fn">sum</span>(a, b) {
   <span class="cm">/* a, b are params */</span>
 }
@@ -470,7 +531,7 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
   },
 
   {
-    topic: "fns",
+    topic: "callback",
     tags: ["core"],
     q: "What is a Callback function?",
     a: `A function passed as an <b>argument</b> to another function, to be "called back" at a later time.<br>
@@ -478,6 +539,53 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
     <div class="code-block">button.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () =&gt; {
   console.<span class="fn">log</span>(<span class="str">'Clicked!'</span>); <span class="cm">// this is a callback</span>
 });</div>`,
+  },
+
+  {
+    topic: "callback",
+    tags: ["core"],
+    q: "Advantages of Callback Functions?",
+    a: `&bull; <span class="highlight">Powers Asynchronicity</span> — allow JS (single-threaded) to handle non-blocking tasks.<br>
+    <br /> &bull; <span class="highlight">Deferred Execution</span> — control exactly when a piece of code should run (after events/timers).<br>
+    <br /> &bull; <span class="highlight">Modular/Functional Design</span> — lets us pass generic logic that others can specialize.`,
+  },
+
+  {
+    topic: "callback",
+    tags: ["gotcha", "core"],
+    q: "What is Callback Hell (Pyramid of Doom)?",
+    a: `When asynchronous operations are nested inside each other, creating a structure that grows <b>horizontally</b>.<br>
+    <br /> &bull; <span class="danger-text">Hard to Read</span>: logic is buried deep in nesting.<br>
+    <br /> &bull; <span class="danger-text">Hard to Maintain</span>: tiny changes require restructuring everything.<br>
+    <div class="code-block"><span class="fn">api.createOrder</span>(cart, () =&gt; {
+  <span class="fn">api.proceedToPayment</span>(() =&gt; {
+    <span class="fn">api.showOrderSummary</span>(() =&gt; {
+       <span class="cm">// Pyramid of Doom!</span>
+    });
+  });
+});</div>`,
+  },
+
+  {
+    topic: "callback",
+    tags: ["gotcha"],
+    q: "What is Inversion of Control (IoC)?",
+    a: `<span class="warn-text">The biggest disadvantage:</span> You lose control over your code execution.
+    <br /> When we pass a callback to an external API, we are <b>trusting</b> that API to call it.
+    <b>Trust issues:</b>
+    <br /> &bull; Maybe it <span class="danger-text">never</span> calls it.
+    <br /> &bull; Maybe it calls it <span class="danger-text">twice</span> (e.g., charging a customer twice).
+    <br /> &bull; Maybe it calls it at the <b>wrong time</b>.
+    Promises solve this by giving control <i>back</i> to us.`,
+  },
+
+  {
+    topic: "callback",
+    tags: ["core"],
+    q: "Synchronous vs Asynchronous Callbacks?",
+    a: `Not all callbacks are async! Some run <span class="highlight">immediately</span> (blocking).<br>
+    <br /> &bull; <b>Synchronous:</b> <code>[].map()</code>, <code>[].filter()</code>, <code>[].forEach()</code>.<br>
+    <br /> &bull; <b>Asynchronous:</b> <code>setTimeout</code>, <code>fetch</code>, <code>addEventListener</code>.`,
   },
 
   {
