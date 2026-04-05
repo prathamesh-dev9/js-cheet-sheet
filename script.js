@@ -868,10 +868,10 @@ val || <span class="str">'default'</span> <span class="cm">// default if falsy (
     tags: ["core"],
     q: "How to find memory leaks? (DevTools)",
     a: `Interviewers often ask "How would you detect a leak?":<br>
-    &bull; **Performance Monitor**: Real-time view of JS Heap size. Look for "sawtooth" patterns.<br>
-    &bull; **Heap Snapshot**: Compare two snapshots to see which objects were created but not collected.<br>
-    &bull; **Allocation Instrumentation**: Record precisely which part of the code is allocating memory over time.<br>
-    &bull; **Allocation Sampling**: Low-overhead way to see which functions are responsible for the most memory usage.`,
+    &bull; <b>Performance Monitor</b>: Real-time view of JS Heap size. Look for "sawtooth" patterns.<br>
+    &bull; <b>Heap Snapshot</b>: Compare two snapshots to see which objects were created but not collected.<br>
+    &bull; <b>Allocation Instrumentation</b>: Record precisely which part of the code is allocating memory over time.<br>
+    &bull; <b>Allocation Sampling</b>: Low-overhead way to see which functions are responsible for the most memory usage.`,
   },
 ];
 
