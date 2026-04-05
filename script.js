@@ -10,6 +10,7 @@ const TOPICS = [
   { id: "obj", label: "Objects", color: "#60a5fa" },
   { id: "misc", label: "JS Concepts", color: "#f472b6" },
   { id: "dom", label: "Browser / DOM", color: "#6ee7b7" },
+  { id: "mem", label: "Memory & GC", color: "#f472b6" },
 ];
 
 const DATA = [
@@ -138,6 +139,33 @@ bar(); <span class="cm">// TypeError: bar is not a function</span>
 <span class="kw">const</span> c = <span class="fn">makeCounter</span>();
 c.<span class="fn">inc</span>(); <span class="cm">// 1</span>
 c.count; <span class="cm">// undefined — no access</span></div>`,
+  },
+
+  {
+    topic: "scope",
+    tags: ["core"],
+    q: "The Module Pattern (Encapsulation)?",
+    a: `Legacy but critical pattern for data privacy before ES modules.<br>
+    Uses an <b>IIFE</b> to return an object that exposes public methods while keeping state private.
+    <div class="code-block"><span class="kw">const</span> MyModule = (<span class="kw">function</span>() {
+  <span class="kw">let</span> _privateVar = <span class="num">0</span>;
+  <span class="kw">return</span> {
+    increment() { _privateVar++; },
+    getData() { <span class="kw">return</span> _privateVar; }
+  };
+})();</div>`,
+  },
+
+  {
+    topic: "scope",
+    tags: ["gotcha"],
+    q: "Closure Memory Leak (Context Sharing)?",
+    a: `In some engines (like V8), if two closures are created in the same parent scope, they <b>share the same context object</b>.<br>
+    <span class="warn-text">Trap:</span> If one closure is kept but the other (holding a large object) is not, the large object <b>cannot be GC'd</b> because the context is still reachable.
+    <div class="code-block"><span class="kw">function</span> <span class="fn">leak</span>() {
+  <span class="kw">let</span> giant = <span class="kw">new</span> <span class="fn">Array</span>(<span class="num">1000000</span>);
+  <span class="kw">return</span> <span class="kw">function</span>() { <span class="cm">/* uses nothing */</span> };
+} <span class="cm">// giant is stuck as long as returned fn exists!</span></div>`,
   },
 
   {
@@ -566,6 +594,45 @@ val || <span class="str">'default'</span>    <span class="cm">// default if fals
       <tr><td>Server access</td><td>No</td><td>No</td><td>Yes (HTTP header)</td></tr>
       <tr><td>Cross-tab</td><td>Yes</td><td>No</td><td>Yes</td></tr>
     </table>`,
+  },
+
+  {
+    topic: "mem",
+    tags: ["core"],
+    q: "How does Garbage Collection work (Mark-and-Sweep)?",
+    a: `JS uses a <b>reachable</b> algorithm (not just reference counting).<br>
+    &bull; <span class="highlight">Mark</span>: Starts from roots (Global, Stack) and "marks" every reachable object.<br>
+    &bull; <span class="highlight">Sweep</span>: Memory not marked is reclaimed.<br>
+    Modern engines use <b>Generational Collection</b> (Minor GC for young objects, Major GC for old).`,
+  },
+
+  {
+    topic: "mem",
+    tags: ["gotcha"],
+    q: "4 Common Memory Leaks in JS?",
+    a: `&bull; <b>Accidental Globals</b>: <code>x = 100</code> without let/const.<br>
+    &bull; <b>Forgotten Timers/Callbacks</b>: <code>setInterval</code> running after component unmount.<br>
+    &bull; <b>Out-of-DOM references</b>: Keeping a ref to a removed <code>&lt;button&gt;</code> in a variable.<br>
+    &bull; <b>Closures</b>: Keeping references to large objects in inner functions accidentally.`,
+  },
+
+  {
+    topic: "mem",
+    tags: ["core"],
+    q: "WeakMap and WeakSet — why use them?",
+    a: `They hold <b>weak references</b> to objects.<br>
+    &bull; If an object is <i>only</i> held as a key in a <code>WeakMap</code>, it <span class="highlight">can be garbage collected</span>.<br>
+    &bull; Useful for metadata/caching without preventing GC (e.g., tracking private data of DOM nodes).`,
+  },
+  {
+    topic: "mem",
+    tags: ["core"],
+    q: "How to find memory leaks? (DevTools)",
+    a: `Interviewers often ask "How would you detect a leak?":<br>
+    &bull; **Performance Monitor**: Real-time view of JS Heap size. Look for "sawtooth" patterns.<br>
+    &bull; **Heap Snapshot**: Compare two snapshots to see which objects were created but not collected.<br>
+    &bull; **Allocation Instrumentation**: Record precisely which part of the code is allocating memory over time.<br>
+    &bull; **Allocation Sampling**: Low-overhead way to see which functions are responsible for the most memory usage.`,
   },
 ];
 
