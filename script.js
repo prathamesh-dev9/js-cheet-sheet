@@ -70,11 +70,11 @@ const DATA = [
     tags: ["gotcha"],
     q: "Function declaration vs expression — hoisting difference?",
     a: `<div class="code-block"><span class="cm">// Declaration — FULLY hoisted</span>
-foo(); <span class="cm">// works!</span>
+<span class="fn">foo</span>(); <span class="cm">// works!</span>
 <span class="kw">function</span> <span class="fn">foo</span>() {}
 
 <span class="cm">// Expression — only var hoisted as undefined</span>
-bar(); <span class="cm">// TypeError: bar is not a function</span>
+<span class="fn">bar</span>(); <span class="cm">// TypeError: bar is not a function</span>
 <span class="kw">var</span> bar = <span class="kw">function</span>() {};</div>`,
   },
 
@@ -115,14 +115,22 @@ bar(); <span class="cm">// TypeError: bar is not a function</span>
     topic: "scope",
     tags: ["gotcha"],
     q: "Classic closure bug in loops?",
-    a: `<div class="code-block"><span class="cm">// Bug — all print 3</span>
-<span class="kw">for</span>(<span class="kw">var</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) setTimeout(()=&gt;console.log(i), <span class="num">100</span>);
+    a: `<div class="code-block">
+<span class="cm">// Bug — all print 3</span>
+<span class="kw">for</span>(<span class="kw">var</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) {
+  setTimeout(()=&gt;console.log(i), <span class="num">100</span>);
+}
 
 <span class="cm">// Fix 1: use let (block-scoped per iteration)</span>
-<span class="kw">for</span>(<span class="kw">let</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) setTimeout(()=&gt;console.log(i), <span class="num">100</span>);
+<span class="kw">for</span>(<span class="kw">let</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) {
+  setTimeout(()=&gt;console.log(i), <span class="num">100</span>);
+}
 
 <span class="cm">// Fix 2: IIFE to capture value</span>
-<span class="kw">for</span>(<span class="kw">var</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) ((j)=&gt;setTimeout(()=&gt;console.log(j),<span class="num">100</span>))(i);</div>`,
+<span class="kw">for</span>(<span class="kw">var</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) {
+  ((j)=&gt;setTimeout(()=&gt;console.log(j),<span class="num">100</span>))(i);
+}
+</div>`,
   },
 
   {
@@ -150,8 +158,12 @@ c.count; <span class="cm">// undefined — no access</span></div>`,
     <div class="code-block"><span class="kw">const</span> MyModule = (<span class="kw">function</span>() {
   <span class="kw">let</span> _privateVar = <span class="num">0</span>;
   <span class="kw">return</span> {
-    increment() { _privateVar++; },
-    getData() { <span class="kw">return</span> _privateVar; }
+    increment() {
+      _privateVar++;
+    },
+    getData() {
+      <span class="kw">return</span> _privateVar;
+    }
   };
 })();</div>`,
   },
@@ -164,7 +176,9 @@ c.count; <span class="cm">// undefined — no access</span></div>`,
     <span class="warn-text">Trap:</span> If one closure is kept but the other (holding a large object) is not, the large object <b>cannot be GC'd</b> because the context is still reachable.
     <div class="code-block"><span class="kw">function</span> <span class="fn">leak</span>() {
   <span class="kw">let</span> giant = <span class="kw">new</span> <span class="fn">Array</span>(<span class="num">1000000</span>);
-  <span class="kw">return</span> <span class="kw">function</span>() { <span class="cm">/* uses nothing */</span> };
+  <span class="kw">return</span> <span class="kw">function</span>() {
+    <span class="cm">/* uses nothing but shares context with giant */</span>
+  };
 } <span class="cm">// giant is stuck as long as returned fn exists!</span></div>`,
   },
 
@@ -201,8 +215,10 @@ c.count; <span class="cm">// undefined — no access</span></div>`,
     a: `Arrow fns have <span class="warn-text">no own</span> <code>this</code>. They inherit from where they are defined.<br>
     <div class="code-block"><span class="kw">const</span> obj = {
   name: <span class="str">'JS'</span>,
-  regular: <span class="kw">function</span>() { <span class="kw">return</span> <span class="kw">this</span>.name; }, <span class="cm">// 'JS'</span>
-  arrow: () =&gt; <span class="kw">this</span>.name  <span class="cm">// undefined! (outer this = window)</span>
+  regular: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.name;
+  }, <span class="cm">// 'JS'</span>
+  arrow: () =&gt; <span class="kw">this</span>.name <span class="cm">// undefined! (outer this = window)</span>
 };</div>
     <b>Rule:</b> don't use arrow fns as object methods if you need <code>this</code>`,
   },
@@ -256,10 +272,11 @@ c.count; <span class="cm">// undefined — no access</span></div>`,
     topic: "async",
     tags: ["gotcha"],
     q: "Microtask vs Macrotask execution order?",
-    a: `<div class="code-block">console.log(<span class="str">'1'</span>);              <span class="cm">// sync</span>
+    a: `<div class="code-block">console.log(<span class="str">'1'</span>); <span class="cm">// sync</span>
 setTimeout(()=&gt;console.log(<span class="str">'2'</span>), <span class="num">0</span>); <span class="cm">// macrotask</span>
 Promise.resolve().then(()=&gt;console.log(<span class="str">'3'</span>)); <span class="cm">// microtask</span>
-console.log(<span class="str">'4'</span>);              <span class="cm">// sync</span>
+console.log(<span class="str">'4'</span>); <span class="cm">// sync</span>
+
 <span class="cm">// Output: 1 → 4 → 3 → 2</span></div>
     <span class="warn-text">Key rule:</span> <code>Promise.then</code> ALWAYS runs before <code>setTimeout(fn, 0)</code>`,
   },
@@ -323,8 +340,13 @@ console.log(<span class="str">'4'</span>);              <span class="cm">// sync
     tags: ["core"],
     q: "IIFE — what and why?",
     a: `<b>Immediately Invoked Function Expression</b><br>
-    <div class="code-block">(<span class="kw">function</span>() { <span class="cm">/* runs immediately */</span> })();
-(<span class="kw">()=></span> { <span class="cm">/* arrow IIFE */</span> })();</div>
+    <div class="code-block">(<span class="kw">function</span>() {
+  <span class="cm">/* runs immediately */</span>
+})();
+
+(<span class="kw">()=&gt;</span> {
+  <span class="cm">/* arrow IIFE */</span>
+})();</div>
     <b>Why:</b> creates own scope, avoids polluting global, runs once on load`,
   },
 
@@ -334,7 +356,9 @@ console.log(<span class="str">'4'</span>);              <span class="cm">// sync
     q: "Parameters vs Arguments?",
     a: `&bull; <b>Parameters</b>: variables listed in the function <span class="highlight">definition</span>.<br>
     &bull; <b>Arguments</b>: actual values <span class="highlight">passed</span> to the function when calling it.<br>
-    <div class="code-block"><span class="kw">function</span> <span class="fn">sum</span>(a, b) { <span class="cm">/* a, b are params */</span> }
+    <div class="code-block"><span class="kw">function</span> <span class="fn">sum</span>(a, b) {
+  <span class="cm">/* a, b are params */</span>
+}
 <span class="fn">sum</span>(<span class="num">10</span>, <span class="num">20</span>); <span class="cm">/* 10, 20 are args */</span></div>`,
   },
 
@@ -471,12 +495,12 @@ console.<span class="fn">log</span>(foo.length); <span class="cm">// 1 (only 'a'
     topic: "obj",
     tags: ["core"],
     q: "Optional chaining & Nullish coalescing?",
-    a: `<div class="code-block">obj?.a?.b?.c         <span class="cm">// undefined instead of TypeError</span>
-arr?.[0]             <span class="cm">// safe index access</span>
-fn?.()               <span class="cm">// safe fn call</span>
+    a: `<div class="code-block">obj?.a?.b?.c <span class="cm">// undefined instead of TypeError</span>
+arr?.[<span class="num">0</span>]     <span class="cm">// safe index access</span>
+fn?.()       <span class="cm">// safe fn call</span>
 
-val ?? <span class="str">'default'</span>    <span class="cm">// default only if null/undefined</span>
-val || <span class="str">'default'</span>    <span class="cm">// default if falsy (0, '', false too!)</span></div>
+val ?? <span class="str">'default'</span> <span class="cm">// default only if null/undefined</span>
+val || <span class="str">'default'</span> <span class="cm">// default if falsy (0, '', false too!)</span></div>
     <span class="warn-text">Key diff:</span> <code>??</code> is safer than <code>||</code> for numbers/booleans`,
   },
 
@@ -577,7 +601,7 @@ val || <span class="str">'default'</span>    <span class="cm">// default if fals
     Use <code>event.target</code> to identify which child was clicked.<br>
     <b>Benefits:</b> better performance, handles dynamically added elements automatically.
     <div class="code-block">ul.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
-  <span class="kw">if</span>(e.target.matches(<span class="str">'li'</span>)) {
+  <span class="kw">if</span> (e.target.matches(<span class="str">'li'</span>)) {
     <span class="cm">// handle li click</span>
   }
 });</div>`,
