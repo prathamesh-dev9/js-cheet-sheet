@@ -42,8 +42,8 @@ const DATA = [
     topic: "ec",
     tags: ["core"],
     q: "JS is synchronous single-threaded — what does it mean?",
-    a: `&bull; <span class="highlight">Single-threaded</span>: only 1 command at a time<br>
-    <br /> &bull; <span class="highlight">Synchronous</span>: commands run in a fixed, specific order<br>
+    a: `&bull; <span class="highlight">Single-threaded</span>: only 1 command at a time
+    <br /> &bull; <span class="highlight">Synchronous</span>: commands run in a fixed, specific order
     <br /> &bull; Managed by the <b>Call Stack</b> — GEC at bottom, function ECs pushed/popped on top`,
   },
 
@@ -772,12 +772,46 @@ val || <span class="str">'default'</span> <span class="cm">// default if falsy (
   {
     topic: "misc",
     tags: ["core"],
-    q: "Debounce vs Throttle?",
-    a: `<b>Debounce</b>: waits N ms after <b>last call</b>. Resets timer on each call.<br>
-    &bull; Use for: search input, window resize<br><br>
-    <b>Throttle</b>: allows max once per N ms regardless of calls.<br>
-    &bull; Use for: scroll handler, mousemove, rate-limiting API calls<br>
-    Both optimize performance by limiting function call rate.`,
+    q: "Debounce vs Throttle (Concepts)?",
+    a: `<b>Debounce</b>: waits N ms after <b>last call</b>. Resets timer on each call.
+    <br /> &bull; Use for: Search input, window resize (wait for user to stop).
+    <br /><b>Throttle</b>: allows max once per N ms regardless of calls.
+    <br /> &bull; Use for: Scroll handler, mousemove (regular intervals).`,
+  },
+
+  {
+    topic: "misc",
+    tags: ["core"],
+    q: "Debounce Implementation?",
+    a: `Ensures function runs only after a period of inactivity.
+    <div class="code-block"><span class="kw">function</span> <span class="fn">debounce</span>(fn, delay) {
+  <span class="kw">let</span> timer;
+  <span class="kw">return</span> <span class="kw">function</span>(...args) {
+    <span class="fn">clearTimeout</span>(timer);
+    timer = <span class="fn">setTimeout</span>(() =&gt; {
+      fn.<span class="fn">apply</span>(<span class="kw">this</span>, args);
+    }, delay);
+  };
+}</div>`,
+  },
+
+  {
+    topic: "misc",
+    tags: ["core"],
+    q: "Throttle Implementation?",
+    a: `Ensures function runs at most once in a specified time interval.
+    <div class="code-block"><span class="kw">function</span> <span class="fn">throttle</span>(fn, limit) {
+  <span class="kw">let</span> flag = <span class="kw">true</span>;
+  <span class="kw">return</span> <span class="kw">function</span>(...args) {
+    <span class="kw">if</span> (flag) {
+      fn.<span class="fn">apply</span>(<span class="kw">this</span>, args);
+      flag = <span class="kw">false</span>;
+      <span class="fn">setTimeout</span>(() =&gt; {
+        flag = <span class="kw">true</span>;
+      }, limit);
+    }
+  };
+}</div>`,
   },
 
   {
@@ -940,7 +974,15 @@ function buildMain() {
       <div class="cards-grid">`;
     items.forEach((item) => {
       const tagsHtml = item.tags
-        .map((tag) => `<span class="pill pill-${tag}">${tag}</span>`)
+        .map((tag) => {
+          const desc =
+            tag === "core"
+              ? "Fundamental concept"
+              : tag === "gotcha"
+                ? "Tricky behavior / Common pitfall"
+                : "";
+          return `<span class="pill pill-${tag}" data-tooltip="${desc}">${tag}</span>`;
+        })
         .join("");
       const body = item.html || `<div class="card-a">${item.a}</div>`;
       html += `<div class="card">
