@@ -2,7 +2,7 @@ const TOPICS = [
   { id: "ec", label: "Execution Context", color: "#818cf8" },
   { id: "hoist", label: "Hoisting", color: "#fbbf24" },
   { id: "scope", label: "Scope & Closures", color: "#60a5fa" },
-  { id: "this", label: "this & Binding", color: "#f472b6" },
+  { id: "this", label: "The 'this' Keyword", color: "#f472b6" },
   { id: "proto", label: "Prototype", color: "#6ee7b7" },
   { id: "async", label: "Async & Event Loop", color: "#f87171" },
   { id: "fns", label: "Functions", color: "#818cf8" },
@@ -185,27 +185,101 @@ c.count; <span class="cm">// undefined — no access</span></div>`,
   {
     topic: "this",
     tags: ["core"],
-    q: "How does 'this' work in different contexts?",
-    html: `<table class="cmp-table">
-      <tr><th>Context</th><th>this value</th></tr>
-      <tr><td>Global scope</td><td>window / global</td></tr>
-      <tr><td>Object method</td><td>the object (before the dot)</td></tr>
-      <tr><td>Arrow function</td><td>inherited from outer scope</td></tr>
-      <tr><td>Strict mode fn</td><td>undefined</td></tr>
-      <tr><td>new Constructor()</td><td>new instance being created</td></tr>
-      <tr><td>call / apply / bind</td><td>explicitly passed value</td></tr>
-    </table>`,
+    q: "The 4 Rules of 'this' Binding (Precedence)?",
+    a: `JS determines <code>this</code> by these rules in order of priority:
+    <div class="code-block"><span class="num">1</span>. <b>new Binding</b>: new instance is created.
+<span class="num">2</span>. <b>Explicit Binding</b>: <code>call</code>, <code>apply</code>, <code>bind</code>.
+<span class="num">3</span>. <b>Implicit Binding</b>: Object before the dot (<code>obj.fn()</code>).
+<span class="num">4</span>. <b>Default Binding</b>: global (window) or <code>undefined</code> (strict).</div>`,
+  },
+
+  {
+    topic: "this",
+    tags: ["core"],
+    q: "Implicit vs Explicit Binding examples?",
+    a: `<div class="code-block"><span class="cm">// Implicit: 'this' is person</span>
+<span class="kw">const</span> person = {
+  name: <span class="str">'Alice'</span>,
+  greet() { console.log(<span class="kw">this</span>.name); }
+};
+person.greet(); 
+
+<span class="cm">// Explicit: 'this' is forced to forcedContext</span>
+<span class="kw">const</span> forcedContext = { name: <span class="str">'Bob'</span> };
+person.greet.call(forcedContext);</div>`,
+  },
+
+  {
+    topic: "this",
+    tags: ["gotcha"],
+    q: "Lost Context (The Callback Trap)?",
+    a: `When a method is passed as a callback, it is detached from its object, and <code>this</code> reverts to the default (global/undefined).
+    <div class="code-block"><span class="kw">const</span> user = {
+  name: <span class="str">'Dev'</span>,
+  sayHi() { console.log(<span class="kw">this</span>.name); }
+};
+
+setTimeout(user.sayHi, <span class="num">1000</span>); <span class="cm">// undefined!</span></div>
+    <b>Why:</b> <code>setTimeout</code> calls the fn as <code>fn()</code>, not <code>user.fn()</code>.`,
+  },
+
+  {
+    topic: "this",
+    tags: ["core"],
+    q: "How to fix lost context?",
+    a: `Three main ways to preserve the <code>this</code> reference:
+    <div class="code-block"><span class="cm">// 1. Arrow function wrapper</span>
+setTimeout(() =&gt; user.sayHi(), <span class="num">1000</span>);
+
+<span class="cm">// 2. .bind()</span>
+setTimeout(user.sayHi.bind(user), <span class="num">1000</span>);
+
+<span class="cm">// 3. Arrow function as method (class fields)</span>
+sayHi = () =&gt; { console.log(<span class="kw">this</span>.name); }</div>`,
   },
 
   {
     topic: "this",
     tags: ["core"],
     q: "call() vs apply() vs bind() ?",
-    a: `All 3 explicitly set <code>this</code>:<br>
-    &bull; <code>fn.call(obj, a, b)</code> — invokes <span class="highlight">immediately</span>, args spread<br>
-    &bull; <code>fn.apply(obj, [a, b])</code> — invokes <span class="highlight">immediately</span>, args as array<br>
-    &bull; <code>fn.bind(obj)</code> — returns <span class="warn-text">new function</span>, invoke later<br>
-    <b>Memory trick:</b> <b>A</b>pply = <b>A</b>rray`,
+    a: `All 3 explicitly set <code>this</code>:
+    &bull; <code>fn.call(obj, a, b)</code> — invokes <span class="highlight">immediately</span>, args comma-separated.
+    &bull; <code>fn.apply(obj, [a, b])</code> — invokes <span class="highlight">immediately</span>, args as array.
+    &bull; <code>fn.bind(obj)</code> — returns <span class="warn-text">new function</span>, can be invoked later.
+    <b>Memory trick:</b> <b>A</b>pply = <b>A</b>rray.`,
+  },
+
+  {
+    topic: "this",
+    tags: ["gotcha"],
+    q: "Arrow function 'this' vs Regular function?",
+    a: `Regular functions have **Dynamic Binding** (this depends on the call site).<br>
+    Arrow functions have **Lexical Binding** (this is inherited from where they are defined).<br>
+    <div class="code-block"><span class="kw">const</span> obj = {
+  name: <span class="str">'JS'</span>,
+  regular: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.name;
+  }, <span class="cm">// 'JS'</span>
+  arrow: () =&gt; <span class="kw">this</span>.name <span class="cm">// undefined! (outer this = window)</span>
+};</div>`,
+  },
+
+  {
+    topic: "this",
+    tags: ["core", "gotcha"],
+    q: "Tricky 'this' Quiz — what is the output?",
+    a: `<div class="code-block"><span class="kw">var</span> name = <span class="str">'Global'</span>;
+<span class="kw">const</span> obj = {
+  name: <span class="str">'Local'</span>,
+  sayName() {
+    console.log(<span class="kw">this</span>.name);
+  }
+};
+
+<span class="kw">const</span> fn = obj.sayName;
+obj.sayName(); <span class="cm">// 1?</span>
+fn();          <span class="cm">// 2?</span></div>
+    <b>Answers:</b> 1. 'Local' (implicit), 2. 'Global' (lost context/default binding).`,
   },
 
   {
@@ -716,7 +790,7 @@ function buildSidebar() {
       activeTopic === t.id || activeTopic === "all"
         ? ""
         : activeTopic !== t.id
-          ? " style='opacity:0.4'"
+          ? " style='opacity:0.7'"
           : "";
     return `<div class="sidebar-item${activeTopic === t.id ? " active" : ""}" onclick="setTopic('${t.id}')"${cls}>
       <span class="sidebar-dot" style="background:${t.color}"></span>

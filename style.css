@@ -5,7 +5,7 @@
   --border: #252a38;
   --border2: #2e3547;
   --text: #e8eaf0;
-  --muted: #6b7280;
+  --muted: #9ca3af;
   --subtle: #9ca3af;
   --accent: #6ee7b7;
   --accent2: #818cf8;
@@ -223,7 +223,6 @@ body {
   border-radius: 10px;
   padding: 14px 16px;
   transition: border-color 0.15s;
-  height: max-content;
 }
 
 .card:hover { border-color: var(--border2); }
