@@ -146,7 +146,7 @@ body {
   border-right: 1px solid var(--border);
   padding: 16px 0;
   position: sticky;
-  top: 120px;
+  top: 170px;
   height: calc(100vh - 120px);
   overflow-y: auto;
 }

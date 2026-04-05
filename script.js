@@ -13,6 +13,7 @@ const TOPICS = [
   { id: "misc", label: "JS Concepts", color: "#f472b6" },
   { id: "dom", label: "Browser / DOM", color: "#6ee7b7" },
   { id: "mem", label: "Memory & GC", color: "#f472b6" },
+  { id: "polyfill", label: "Polyfills", color: "#10b981" },
 ];
 
 const DATA = [
@@ -906,6 +907,148 @@ val || <span class="str">'default'</span> <span class="cm">// default if falsy (
     &bull; <b>Heap Snapshot</b>: Compare two snapshots to see which objects were created but not collected.<br>
     &bull; <b>Allocation Instrumentation</b>: Record precisely which part of the code is allocating memory over time.<br>
     &bull; <b>Allocation Sampling</b>: Low-overhead way to see which functions are responsible for the most memory usage.`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "What is a Polyfill?",
+    a: `A piece of code used to provide modern functionality on older browsers that do not natively support it.<br>
+    <b>Why?</b> To ensure cross-browser compatibility and allow developers to use modern APIs without worrying about older environments.`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "Polyfill for Array.prototype.map?",
+    a: `Creates a new array by applying a callback to each element.
+    <div class="code-block"><span class="fn">Array</span>.prototype.<span class="fn">myMap</span> = <span class="kw">function</span>(cb) {
+  <span class="kw">let</span> temp = [];
+  <span class="kw">for</span> (<span class="kw">let</span> i = 0; i &lt; <span class="kw">this</span>.length; i++) {
+    temp.<span class="fn">push</span>(<span class="fn">cb</span>(<span class="kw">this</span>[i], i, <span class="kw">this</span>));
+  }
+  <span class="kw">return</span> temp;
+};</div>`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "Polyfill for Array.prototype.filter?",
+    a: `Creates a new array with elements that pass the test in the callback.
+    <div class="code-block"><span class="fn">Array</span>.prototype.<span class="fn">myFilter</span> = <span class="kw">function</span>(cb) {
+  <span class="kw">let</span> temp = [];
+  <span class="kw">for</span> (<span class="kw">let</span> i = 0; i &lt; <span class="kw">this</span>.length; i++) {
+    <span class="kw">if</span> (<span class="fn">cb</span>(<span class="kw">this</span>[i], i, <span class="kw">this</span>)) temp.<span class="fn">push</span>(<span class="kw">this</span>[i]);
+  }
+  <span class="kw">return</span> temp;
+};</div>`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "Polyfill for Array.prototype.reduce?",
+    a: `Executes a reducer function on each element, resulting in a single output value.
+    <div class="code-block"><span class="fn">Array</span>.prototype.<span class="fn">myReduce</span> = <span class="kw">function</span>(cb, initialValue) {
+  <span class="kw">let</span> accumulator = initialValue;
+  <span class="kw">for</span> (<span class="kw">let</span> i = 0; i &lt; <span class="kw">this</span>.length; i++) {
+    accumulator = accumulator !== <span class="kw">undefined</span> 
+      ? <span class="fn">cb</span>(accumulator, <span class="kw">this</span>[i], i, <span class="kw">this</span>) 
+      : <span class="kw">this</span>[i];
+  }
+  <span class="kw">return</span> accumulator;
+};</div>`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "Polyfill for Function.prototype.bind?",
+    a: `Returns a new function with a fixed <code>this</code> context and initial arguments.
+    <div class="code-block"><span class="fn">Function</span>.prototype.<span class="fn">myBind</span> = <span class="kw">function</span>(context, ...args) {
+  <span class="kw">let</span> obj = <span class="kw">this</span>;
+  <span class="kw">return</span> <span class="kw">function</span>(...nextArgs) {
+    obj.<span class="fn">apply</span>(context, [...args, ...nextArgs]);
+  };
+};</div>`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "Polyfill for Function.prototype.call?",
+    a: `Invokes the function with a given <code>this</code> value and arguments provided individually.
+    <div class="code-block"><span class="fn">Function</span>.prototype.<span class="fn">myCall</span> = <span class="kw">function</span>(context = window, ...args) {
+  <span class="kw">const</span> fnSymbol = <span class="fn">Symbol</span>();
+  context[fnSymbol] = <span class="kw">this</span>;
+  <span class="kw">const</span> result = context[<span class="fn">fnSymbol</span>](...args);
+  <span class="kw">delete</span> context[fnSymbol];
+  <span class="kw">return</span> result;
+};</div>`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "Polyfill for Promise.all?",
+    a: `Takes an array of promises and returns a single promise that resolves when all input promises resolve.
+    <div class="code-block"><span class="kw">const</span> <span class="fn">myPromiseAll</span> = (promises) =&gt; {
+  <span class="kw">return</span> <span class="kw">new</span> <span class="fn">Promise</span>((resolve, reject) =&gt; {
+    <span class="kw">let</span> results = [], completed = 0;
+    promises.<span class="fn">forEach</span>((p, i) =&gt; {
+      <span class="fn">Promise</span>.<span class="fn">resolve</span>(p).<span class="fn">then</span>(val =&gt; {
+        results[i] = val;
+        completed++;
+        <span class="kw">if</span> (completed === promises.length) <span class="fn">resolve</span>(results);
+      }, reject);
+    });
+  });
+};</div>`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "Polyfill for Promise.race?",
+    a: `Returns a promise that fulfills or rejects as soon as one of the promises in an iterable fulfills or rejects.
+    <div class="code-block"><span class="kw">const</span> <span class="fn">myPromiseRace</span> = (promises) =&gt; {
+  <span class="kw">return</span> <span class="kw">new</span> <span class="fn">Promise</span>((resolve, reject) =&gt; {
+    promises.<span class="fn">forEach</span>(p =&gt; {
+      <span class="fn">Promise</span>.<span class="fn">resolve</span>(p).<span class="fn">then</span>(resolve, reject);
+    });
+  });
+};</div>`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "Polyfill for Array.prototype.flat?",
+    a: `Creates a new array with all sub-array elements concatenated into it recursively up to the specified depth.
+    <div class="code-block"><span class="fn">Array</span>.prototype.<span class="fn">myFlat</span> = <span class="kw">function</span>(depth = 1) {
+  <span class="kw">let</span> res = [];
+  <span class="kw">this</span>.<span class="fn">forEach</span>(el =&gt; {
+    <span class="kw">if</span> (Array.<span class="fn">isArray</span>(el) &amp;&amp; depth &gt; 0) {
+      res.<span class="fn">push</span>(...el.<span class="fn">myFlat</span>(depth - 1));
+    } <span class="kw">else</span> {
+      res.<span class="fn">push</span>(el);
+    }
+  });
+  <span class="kw">return</span> res;
+};</div>`,
+  },
+
+  {
+    topic: "polyfill",
+    tags: ["core"],
+    q: "Polyfill for Object.create?",
+    a: `Creates a new object, using an existing object as the prototype of the newly created object.
+    <div class="code-block"><span class="kw">function</span> <span class="fn">myObjectCreate</span>(proto) {
+  <span class="kw">function</span> <span class="fn">F</span>() {}
+  F.prototype = proto;
+  <span class="kw">return</span> <span class="kw">new</span> <span class="fn">F</span>();
+}</div>`,
   },
 ];
 
