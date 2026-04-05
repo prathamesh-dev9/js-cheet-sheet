@@ -1,73 +1,96 @@
 const TOPICS = [
-  { id:"ec",    label:"Execution Context", color:"#818cf8" },
-  { id:"hoist", label:"Hoisting",          color:"#fbbf24" },
-  { id:"scope", label:"Scope & Closures",  color:"#60a5fa" },
-  { id:"this",  label:"this & Binding",    color:"#f472b6" },
-  { id:"proto", label:"Prototype",         color:"#6ee7b7" },
-  { id:"async", label:"Async & Event Loop",color:"#f87171" },
-  { id:"fns",   label:"Functions",         color:"#818cf8" },
-  { id:"array", label:"Array Methods",     color:"#fbbf24" },
-  { id:"obj",   label:"Objects",           color:"#60a5fa" },
-  { id:"misc",  label:"JS Concepts",       color:"#f472b6" },
-  { id:"dom",   label:"Browser / DOM",     color:"#6ee7b7" },
+  { id: "ec", label: "Execution Context", color: "#818cf8" },
+  { id: "hoist", label: "Hoisting", color: "#fbbf24" },
+  { id: "scope", label: "Scope & Closures", color: "#60a5fa" },
+  { id: "this", label: "this & Binding", color: "#f472b6" },
+  { id: "proto", label: "Prototype", color: "#6ee7b7" },
+  { id: "async", label: "Async & Event Loop", color: "#f87171" },
+  { id: "fns", label: "Functions", color: "#818cf8" },
+  { id: "array", label: "Array Methods", color: "#fbbf24" },
+  { id: "obj", label: "Objects", color: "#60a5fa" },
+  { id: "misc", label: "JS Concepts", color: "#f472b6" },
+  { id: "dom", label: "Browser / DOM", color: "#6ee7b7" },
 ];
 
 const DATA = [
-  { topic:"ec", tags:["core"],
-    q:"What is an Execution Context?",
-    a:`Container where JS code is evaluated & executed. Has <b>2 parts</b>:<br>
+  {
+    topic: "ec",
+    tags: ["core"],
+    q: "What is an Execution Context?",
+    a: `Container where JS code is evaluated & executed. Has <b>2 parts</b>:<br>
     &bull; <span class="highlight">Memory (Variable Env)</span> — stores vars/fns as key:value pairs<br>
     &bull; <span class="highlight">Code (Thread of Execution)</span> — runs one line at a time<br>
-    Types: <b>Global EC</b> (on page load) &bull; <b>Function EC</b> (per function call)` },
+    Types: <b>Global EC</b> (on page load) &bull; <b>Function EC</b> (per function call)`,
+  },
 
-  { topic:"ec", tags:["core"],
-    q:"2 phases of Execution Context creation?",
-    a:`<b>Phase 1 — Memory Creation:</b><br>
+  {
+    topic: "ec",
+    tags: ["core"],
+    q: "2 phases of Execution Context creation?",
+    a: `<b>Phase 1 — Memory Creation:</b><br>
     &bull; <code>var</code> → set to <code>undefined</code><br>
     &bull; Functions → stored fully (whole body)<br>
     <b>Phase 2 — Code Execution:</b><br>
     &bull; Runs line by line, vars get actual values<br>
-    &bull; This 2-phase process is the root cause of <span class="warn-text">Hoisting</span>` },
+    &bull; This 2-phase process is the root cause of <span class="warn-text">Hoisting</span>`,
+  },
 
-  { topic:"ec", tags:["core"],
-    q:"JS is synchronous single-threaded — what does it mean?",
-    a:`&bull; <span class="highlight">Single-threaded</span>: only 1 command at a time<br>
+  {
+    topic: "ec",
+    tags: ["core"],
+    q: "JS is synchronous single-threaded — what does it mean?",
+    a: `&bull; <span class="highlight">Single-threaded</span>: only 1 command at a time<br>
     &bull; <span class="highlight">Synchronous</span>: commands run in a fixed, specific order<br>
-    &bull; Managed by the <b>Call Stack</b> — GEC at bottom, function ECs pushed/popped on top` },
+    &bull; Managed by the <b>Call Stack</b> — GEC at bottom, function ECs pushed/popped on top`,
+  },
 
-  { topic:"hoist", tags:["core","gotcha"],
-    q:"What is Hoisting?",
-    a:`Memory is allocated for vars & fns <b>before code runs</b>.<br>
+  {
+    topic: "hoist",
+    tags: ["core", "gotcha"],
+    q: "What is Hoisting?",
+    a: `Memory is allocated for vars & fns <b>before code runs</b>.<br>
     &bull; <code>var</code> → hoisted, initialized as <code>undefined</code><br>
     &bull; <code>function foo(){}</code> → hoisted <span class="highlight">fully</span>, callable anywhere<br>
     &bull; <code>let</code> / <code>const</code> → hoisted but in <span class="warn-text">TDZ</span> — accessing throws <code>ReferenceError</code><br>
-    &bull; <code>const foo = function(){}</code> → only <code>foo hoisted as <code>undefined</code>` },
+    &bull; <code>const foo = function(){}</code> → only <code>foo hoisted as <code>undefined</code>`,
+  },
 
-  { topic:"hoist", tags:["gotcha"],
-    q:"What is the Temporal Dead Zone (TDZ)?",
-    a:`Gap between <code>let</code>/<code>const</code> being <b>hoisted</b> and being <b>initialized</b>.<br>
+  {
+    topic: "hoist",
+    tags: ["gotcha"],
+    q: "What is the Temporal Dead Zone (TDZ)?",
+    a: `Gap between <code>let</code>/<code>const</code> being <b>hoisted</b> and being <b>initialized</b>.<br>
     Accessing in this zone → <span class="danger-text">ReferenceError</span><br>
-    <b>Fix:</b> always declare variables at the top of their scope.` },
+    <b>Fix:</b> always declare variables at the top of their scope.`,
+  },
 
-  { topic:"hoist", tags:["gotcha"],
-    q:"Function declaration vs expression — hoisting difference?",
-    a:`<div class="code-block"><span class="cm">// Declaration — FULLY hoisted</span>
+  {
+    topic: "hoist",
+    tags: ["gotcha"],
+    q: "Function declaration vs expression — hoisting difference?",
+    a: `<div class="code-block"><span class="cm">// Declaration — FULLY hoisted</span>
 foo(); <span class="cm">// works!</span>
 <span class="kw">function</span> <span class="fn">foo</span>() {}
 
 <span class="cm">// Expression — only var hoisted as undefined</span>
 bar(); <span class="cm">// TypeError: bar is not a function</span>
-<span class="kw">var</span> bar = <span class="kw">function</span>() {};</div>` },
+<span class="kw">var</span> bar = <span class="kw">function</span>() {};</div>`,
+  },
 
-  { topic:"scope", tags:["core"],
-    q:"What is Scope Chain?",
-    a:`JS looks for a var in <b>current scope → outer scope → … → global</b>. Stops when found.<br>
+  {
+    topic: "scope",
+    tags: ["core"],
+    q: "What is Scope Chain?",
+    a: `JS looks for a var in <b>current scope → outer scope → … → global</b>. Stops when found.<br>
     If not found anywhere → <span class="danger-text">ReferenceError</span><br>
-    <span class="highlight">Lexical scope</span>: scope is determined at write-time, not runtime` },
+    <span class="highlight">Lexical scope</span>: scope is determined at write-time, not runtime`,
+  },
 
-  { topic:"scope", tags:["core","gotcha"],
-    q:"var vs let vs const — key differences?",
-    html:`<table class="cmp-table">
+  {
+    topic: "scope",
+    tags: ["core", "gotcha"],
+    q: "var vs let vs const — key differences?",
+    html: `<table class="cmp-table">
       <tr><th>Feature</th><th>var</th><th>let</th><th>const</th></tr>
       <tr><td>Scope</td><td>function</td><td>block</td><td>block</td></tr>
       <tr><td>Hoisting</td><td>undefined</td><td>TDZ</td><td>TDZ</td></tr>
@@ -75,28 +98,37 @@ bar(); <span class="cm">// TypeError: bar is not a function</span>
       <tr><td>Re-declare</td><td>yes</td><td>no</td><td>no</td></tr>
       <tr><td>Window prop</td><td>yes</td><td>no</td><td>no</td></tr>
     </table>
-    <div style="margin-top:8px;font-size:12px;color:#9ca3af"><span class="warn-text">Note:</span> <code>const</code> object properties CAN be mutated. <code>const</code> prevents reassignment only.</div>` },
+    <div style="margin-top:8px;font-size:12px;color:#9ca3af"><span class="warn-text">Note:</span> <code>const</code> object properties CAN be mutated. <code>const</code> prevents reassignment only.</div>`,
+  },
 
-  { topic:"scope", tags:["core"],
-    q:"What is a Closure?",
-    a:`A function that <span class="highlight">remembers its outer scope</span> even after the outer function has returned.<br>
+  {
+    topic: "scope",
+    tags: ["core"],
+    q: "What is a Closure?",
+    a: `A function that <span class="highlight">remembers its outer scope</span> even after the outer function has returned.<br>
     Every JS function creates a closure over its lexical environment.<br>
-    <b>Use cases:</b> data privacy, currying, memoization, event handlers, module pattern` },
+    <b>Use cases:</b> data privacy, currying, memoization, event handlers, module pattern`,
+  },
 
-  { topic:"scope", tags:["gotcha"],
-    q:"Classic closure bug in loops?",
-    a:`<div class="code-block"><span class="cm">// Bug — all print 3</span>
+  {
+    topic: "scope",
+    tags: ["gotcha"],
+    q: "Classic closure bug in loops?",
+    a: `<div class="code-block"><span class="cm">// Bug — all print 3</span>
 <span class="kw">for</span>(<span class="kw">var</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) setTimeout(()=&gt;console.log(i), <span class="num">100</span>);
 
 <span class="cm">// Fix 1: use let (block-scoped per iteration)</span>
 <span class="kw">for</span>(<span class="kw">let</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) setTimeout(()=&gt;console.log(i), <span class="num">100</span>);
 
 <span class="cm">// Fix 2: IIFE to capture value</span>
-<span class="kw">for</span>(<span class="kw">var</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) ((j)=&gt;setTimeout(()=&gt;console.log(j),<span class="num">100</span>))(i);</div>` },
+<span class="kw">for</span>(<span class="kw">var</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++) ((j)=&gt;setTimeout(()=&gt;console.log(j),<span class="num">100</span>))(i);</div>`,
+  },
 
-  { topic:"scope", tags:["core"],
-    q:"Closure-based counter — data privacy example?",
-    a:`<div class="code-block"><span class="kw">function</span> <span class="fn">makeCounter</span>() {
+  {
+    topic: "scope",
+    tags: ["core"],
+    q: "Closure-based counter — data privacy example?",
+    a: `<div class="code-block"><span class="kw">function</span> <span class="fn">makeCounter</span>() {
   <span class="kw">let</span> count = <span class="num">0</span>;  <span class="cm">// private!</span>
   <span class="kw">return</span> {
     inc: () =&gt; ++count,
@@ -105,11 +137,14 @@ bar(); <span class="cm">// TypeError: bar is not a function</span>
 }
 <span class="kw">const</span> c = <span class="fn">makeCounter</span>();
 c.<span class="fn">inc</span>(); <span class="cm">// 1</span>
-c.count; <span class="cm">// undefined — no access</span></div>` },
+c.count; <span class="cm">// undefined — no access</span></div>`,
+  },
 
-  { topic:"this", tags:["core"],
-    q:"How does 'this' work in different contexts?",
-    html:`<table class="cmp-table">
+  {
+    topic: "this",
+    tags: ["core"],
+    q: "How does 'this' work in different contexts?",
+    html: `<table class="cmp-table">
       <tr><th>Context</th><th>this value</th></tr>
       <tr><td>Global scope</td><td>window / global</td></tr>
       <tr><td>Object method</td><td>the object (before the dot)</td></tr>
@@ -117,227 +152,311 @@ c.count; <span class="cm">// undefined — no access</span></div>` },
       <tr><td>Strict mode fn</td><td>undefined</td></tr>
       <tr><td>new Constructor()</td><td>new instance being created</td></tr>
       <tr><td>call / apply / bind</td><td>explicitly passed value</td></tr>
-    </table>` },
+    </table>`,
+  },
 
-  { topic:"this", tags:["core"],
-    q:"call() vs apply() vs bind() ?",
-    a:`All 3 explicitly set <code>this</code>:<br>
+  {
+    topic: "this",
+    tags: ["core"],
+    q: "call() vs apply() vs bind() ?",
+    a: `All 3 explicitly set <code>this</code>:<br>
     &bull; <code>fn.call(obj, a, b)</code> — invokes <span class="highlight">immediately</span>, args spread<br>
     &bull; <code>fn.apply(obj, [a, b])</code> — invokes <span class="highlight">immediately</span>, args as array<br>
     &bull; <code>fn.bind(obj)</code> — returns <span class="warn-text">new function</span>, invoke later<br>
-    <b>Memory trick:</b> <b>A</b>pply = <b>A</b>rray` },
+    <b>Memory trick:</b> <b>A</b>pply = <b>A</b>rray`,
+  },
 
-  { topic:"this", tags:["gotcha"],
-    q:"Arrow function 'this' gotcha?",
-    a:`Arrow fns have <span class="warn-text">no own</span> <code>this</code>. They inherit from where they are defined.<br>
+  {
+    topic: "this",
+    tags: ["gotcha"],
+    q: "Arrow function 'this' gotcha?",
+    a: `Arrow fns have <span class="warn-text">no own</span> <code>this</code>. They inherit from where they are defined.<br>
     <div class="code-block"><span class="kw">const</span> obj = {
   name: <span class="str">'JS'</span>,
   regular: <span class="kw">function</span>() { <span class="kw">return</span> <span class="kw">this</span>.name; }, <span class="cm">// 'JS'</span>
   arrow: () =&gt; <span class="kw">this</span>.name  <span class="cm">// undefined! (outer this = window)</span>
 };</div>
-    <b>Rule:</b> don't use arrow fns as object methods if you need <code>this</code>` },
+    <b>Rule:</b> don't use arrow fns as object methods if you need <code>this</code>`,
+  },
 
-  { topic:"proto", tags:["core"],
-    q:"What is the Prototype Chain?",
-    a:`Every object has <code>[[Prototype]]</code> linking to another object.<br>
+  {
+    topic: "proto",
+    tags: ["core"],
+    q: "What is the Prototype Chain?",
+    a: `Every object has <code>[[Prototype]]</code> linking to another object.<br>
     Property lookup walks up the chain until <code>Object.prototype</code> (its proto is <code>null</code>).<br>
-    <code>hasOwnProperty()</code> checks only the object, not the chain.` },
+    <code>hasOwnProperty()</code> checks only the object, not the chain.`,
+  },
 
-  { topic:"proto", tags:["core"],
-    q:"What does the 'new' keyword do?",
-    a:`<div class="code-block"><span class="cm">// new Constructor() does 4 things:</span>
+  {
+    topic: "proto",
+    tags: ["core"],
+    q: "What does the 'new' keyword do?",
+    a: `<div class="code-block"><span class="cm">// new Constructor() does 4 things:</span>
 <span class="num">1</span>. Creates empty object: {}
 <span class="num">2</span>. Sets __proto__ = Constructor.prototype
 <span class="num">3</span>. Calls constructor with <span class="kw">this</span> = new object
-<span class="num">4</span>. Returns the object (unless constructor returns object)</div>` },
+<span class="num">4</span>. Returns the object (unless constructor returns object)</div>`,
+  },
 
-  { topic:"proto", tags:["core"],
-    q:"Class syntax vs Prototype — what's the relation?",
-    a:`Classes are <span class="highlight">syntactic sugar</span> over prototypes.<br>
+  {
+    topic: "proto",
+    tags: ["core"],
+    q: "Class syntax vs Prototype — what's the relation?",
+    a: `Classes are <span class="highlight">syntactic sugar</span> over prototypes.<br>
     &bull; Methods in class → added to <code>ClassName.prototype</code><br>
     &bull; <code>extends</code> sets: <code>Child.prototype.__proto__ === Parent.prototype</code><br>
     &bull; <code>super()</code> calls the parent constructor<br>
-    <b>JS is prototype-based, not class-based under the hood</b>` },
+    <b>JS is prototype-based, not class-based under the hood</b>`,
+  },
 
-  { topic:"async", tags:["core"],
-    q:"How does the Event Loop work?",
-    a:`<div class="code-block"><span class="cm">// Order of execution:</span>
+  {
+    topic: "async",
+    tags: ["core"],
+    q: "How does the Event Loop work?",
+    a: `<div class="code-block"><span class="cm">// Order of execution:</span>
 <span class="num">1</span>. Sync code runs on <b>Call Stack</b>
 <span class="num">2</span>. Async ops (setTimeout, fetch) → <b>Web APIs</b>
 <span class="num">3</span>. When done → callbacks go to queues:
    &bull; Promises → <b>Microtask Queue</b> (higher priority)
    &bull; setTimeout/setInterval → <b>Callback Queue</b>
 <span class="num">4</span>. <b>Event Loop</b>: when stack is empty →
-   drain ALL microtasks → ONE macrotask → repeat</div>` },
+   drain ALL microtasks → ONE macrotask → repeat</div>`,
+  },
 
-  { topic:"async", tags:["gotcha"],
-    q:"Microtask vs Macrotask execution order?",
-    a:`<div class="code-block">console.log(<span class="str">'1'</span>);              <span class="cm">// sync</span>
+  {
+    topic: "async",
+    tags: ["gotcha"],
+    q: "Microtask vs Macrotask execution order?",
+    a: `<div class="code-block">console.log(<span class="str">'1'</span>);              <span class="cm">// sync</span>
 setTimeout(()=&gt;console.log(<span class="str">'2'</span>), <span class="num">0</span>); <span class="cm">// macrotask</span>
 Promise.resolve().then(()=&gt;console.log(<span class="str">'3'</span>)); <span class="cm">// microtask</span>
 console.log(<span class="str">'4'</span>);              <span class="cm">// sync</span>
 <span class="cm">// Output: 1 → 4 → 3 → 2</span></div>
-    <span class="warn-text">Key rule:</span> <code>Promise.then</code> ALWAYS runs before <code>setTimeout(fn, 0)</code>` },
+    <span class="warn-text">Key rule:</span> <code>Promise.then</code> ALWAYS runs before <code>setTimeout(fn, 0)</code>`,
+  },
 
-  { topic:"async", tags:["core"],
-    q:"Promise states & key methods?",
-    a:`<b>3 states:</b> <code>pending</code> → <code>fulfilled</code> or <code>rejected</code> (immutable once settled)<br>
+  {
+    topic: "async",
+    tags: ["core"],
+    q: "Promise states & key methods?",
+    a: `<b>3 states:</b> <code>pending</code> → <code>fulfilled</code> or <code>rejected</code> (immutable once settled)<br>
     &bull; <code>.then(onFulfill)</code> &bull; <code>.catch(onReject)</code> &bull; <code>.finally(fn)</code><br>
     &bull; <code>Promise.all([])</code> — waits for all, <span class="danger-text">fails fast</span> on rejection<br>
     &bull; <code>Promise.allSettled([])</code> — waits for all, <span class="highlight">never rejects</span><br>
     &bull; <code>Promise.race([])</code> — resolves/rejects with first settled<br>
-    &bull; <code>Promise.any([])</code> — resolves with first fulfilled` },
+    &bull; <code>Promise.any([])</code> — resolves with first fulfilled`,
+  },
 
-  { topic:"async", tags:["core","gotcha"],
-    q:"async/await — how it works & common mistakes?",
-    a:`&bull; <code>async fn</code> always returns a Promise<br>
+  {
+    topic: "async",
+    tags: ["core", "gotcha"],
+    q: "async/await — how it works & common mistakes?",
+    a: `&bull; <code>async fn</code> always returns a Promise<br>
     &bull; <code>await</code> pauses <b>only that fn</b>, not the thread<br>
     &bull; Syntactic sugar over <code>.then()</code> chains<br>
     &bull; Use <code>try/catch</code> for error handling<br>
     <span class="warn-text">Mistake:</span> Forgetting <code>await</code> → get Promise object, not value<br>
-    <span class="warn-text">Mistake:</span> <code>await</code> in forEach doesn't work — use <code>for...of</code> loop` },
+    <span class="warn-text">Mistake:</span> <code>await</code> in forEach doesn't work — use <code>for...of</code> loop`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"First Class Functions & Higher Order Functions?",
-    a:`<b>First class</b>: functions are values — assign to vars, pass as args, return from fns.<br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "First Class Functions & Higher Order Functions?",
+    a: `<b>First class</b>: functions are values — assign to vars, pass as args, return from fns.<br>
     <b>Higher Order Fn (HOF)</b>: takes fn as arg OR returns a fn.<br>
-    Examples: <code>map</code>, <code>filter</code>, <code>reduce</code>, <code>setTimeout</code>, <code>addEventListener</code>` },
+    Examples: <code>map</code>, <code>filter</code>, <code>reduce</code>, <code>setTimeout</code>, <code>addEventListener</code>`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"Pure function?",
-    a:`&bull; Same input → always same output<br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "Pure function?",
+    a: `&bull; Same input → always same output<br>
     &bull; No side effects (no mutation of external state, no console.log, no API calls)<br>
     &bull; Easier to test, cache, and reason about<br>
-    <b>Examples:</b> <code>Math.max()</code>, <code>Array.map()</code>` },
+    <b>Examples:</b> <code>Math.max()</code>, <code>Array.map()</code>`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"What is Currying?",
-    a:`Transform <code>fn(a,b)</code> into <code>fn(a)(b)</code> — sequence of single-arg functions.<br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "What is Currying?",
+    a: `Transform <code>fn(a,b)</code> into <code>fn(a)(b)</code> — sequence of single-arg functions.<br>
     Enables <b>partial application</b> — create specialized functions from general ones.
     <div class="code-block"><span class="kw">const</span> add = a =&gt; b =&gt; a + b;
 <span class="kw">const</span> add5 = <span class="fn">add</span>(<span class="num">5</span>);
-<span class="fn">add5</span>(<span class="num">3</span>); <span class="cm">// 8</span></div>` },
+<span class="fn">add5</span>(<span class="num">3</span>); <span class="cm">// 8</span></div>`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"IIFE — what and why?",
-    a:`<b>Immediately Invoked Function Expression</b><br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "IIFE — what and why?",
+    a: `<b>Immediately Invoked Function Expression</b><br>
     <div class="code-block">(<span class="kw">function</span>() { <span class="cm">/* runs immediately */</span> })();
 (<span class="kw">()=></span> { <span class="cm">/* arrow IIFE */</span> })();</div>
-    <b>Why:</b> creates own scope, avoids polluting global, runs once on load` },
+    <b>Why:</b> creates own scope, avoids polluting global, runs once on load`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"Parameters vs Arguments?",
-    a:`&bull; <b>Parameters</b>: variables listed in the function <span class="highlight">definition</span>.<br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "Parameters vs Arguments?",
+    a: `&bull; <b>Parameters</b>: variables listed in the function <span class="highlight">definition</span>.<br>
     &bull; <b>Arguments</b>: actual values <span class="highlight">passed</span> to the function when calling it.<br>
     <div class="code-block"><span class="kw">function</span> <span class="fn">sum</span>(a, b) { <span class="cm">/* a, b are params */</span> }
-<span class="fn">sum</span>(<span class="num">10</span>, <span class="num">20</span>); <span class="cm">/* 10, 20 are args */</span></div>` },
+<span class="fn">sum</span>(<span class="num">10</span>, <span class="num">20</span>); <span class="cm">/* 10, 20 are args */</span></div>`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"What is a Callback function?",
-    a:`A function passed as an <b>argument</b> to another function, to be "called back" at a later time.<br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "What is a Callback function?",
+    a: `A function passed as an <b>argument</b> to another function, to be "called back" at a later time.<br>
     Essential for asynchronous programming (event listeners, timers, promises).<br>
     <div class="code-block">button.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, () =&gt; {
   console.<span class="fn">log</span>(<span class="str">'Clicked!'</span>); <span class="cm">// this is a callback</span>
-});</div>` },
+});</div>`,
+  },
 
-  { topic:"fns", tags:["gotcha"],
-    q:"What is Shadowing?",
-    a:`When a variable declared in an inner scope has the <b>same name</b> as a variable in an outer scope.<br>
+  {
+    topic: "fns",
+    tags: ["gotcha"],
+    q: "What is Shadowing?",
+    a: `When a variable declared in an inner scope has the <b>same name</b> as a variable in an outer scope.<br>
     The inner variable "shadows" the outer one, making it inaccessible in that scope.<br>
     <div class="code-block"><span class="kw">let</span> x = <span class="num">10</span>;
 <span class="kw">function</span> <span class="fn">foo</span>() {
   <span class="kw">let</span> x = <span class="num">20</span>; <span class="cm">// shadows outer x</span>
   console.<span class="fn">log</span>(x); <span class="cm">// 20</span>
-}</div>` },
+}</div>`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"Named Function Expression (NFE)?",
-    a:`A function expression that has a name, useful for recursion and debugging.<br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "Named Function Expression (NFE)?",
+    a: `A function expression that has a name, useful for recursion and debugging.<br>
     The name is <b>only accessible</b> inside the function's own scope.<br>
     <div class="code-block"><span class="kw">const</span> factorial = <span class="kw">function</span> <span class="fn">compute</span>(n) {
   <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;
   <span class="kw">return</span> n * <span class="fn">compute</span>(n - <span class="num">1</span>); <span class="cm">// compute works here</span>
 };
-<span class="fn">compute</span>(<span class="num">5</span>); <span class="cm">// ReferenceError outside</span></div>` },
+<span class="fn">compute</span>(<span class="num">5</span>); <span class="cm">// ReferenceError outside</span></div>`,
+  },
 
-  { topic:"fns", tags:["gotcha"],
-    q:"Anonymous functions — pros & cons?",
-    a:`Functions without a name (e.g., arrow fns, regular fns used as values).<br>
+  {
+    topic: "fns",
+    tags: ["gotcha"],
+    q: "Anonymous functions — pros & cons?",
+    a: `Functions without a name (e.g., arrow fns, regular fns used as values).<br>
     &bull; <span class="highlight">Pros</span>: concise, good for one-off callbacks.<br>
-    &bull; <span class="warn-text">Cons</span>: harder to debug (shows as "anonymous" in stack traces), cannot use for recursion easily.` },
+    &bull; <span class="warn-text">Cons</span>: harder to debug (shows as "anonymous" in stack traces), cannot use for recursion easily.`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"Function Declaration vs Function Expression?",
-    a:`&bull; <b>Declaration</b>: <code>function foo() {}</code> — <span class="highlight">hoisted fully</span>, can be called before definition.<br>
-    &bull; <b>Expression</b>: <code>const foo = function() {}</code> — <span class="warn-text">not hoisted</span> (only the variable is), throws error if called before.` },
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "Function Declaration vs Function Expression?",
+    a: `&bull; <b>Declaration</b>: <code>function foo() {}</code> — <span class="highlight">hoisted fully</span>, can be called before definition.<br>
+    &bull; <b>Expression</b>: <code>const foo = function() {}</code> — <span class="warn-text">not hoisted</span> (only the variable is), throws error if called before.`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"What is the 'arguments' object?",
-    a:`An <b>array-like</b> object available inside non-arrow functions that contains all arguments passed to it.<br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "What is the 'arguments' object?",
+    a: `An <b>array-like</b> object available inside non-arrow functions that contains all arguments passed to it.<br>
     <div class="code-block"><span class="kw">function</span> <span class="fn">showArgs</span>() {
   console.<span class="fn">log</span>(arguments[<span class="num">0</span>]); <span class="cm">// access by index</span>
 }</div>
-    <span class="warn-text">Note:</span> Arrow functions <b>do not</b> have their own <code>arguments</code> object!` },
+    <span class="warn-text">Note:</span> Arrow functions <b>do not</b> have their own <code>arguments</code> object!`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"Rest Parameters (...)?",
-    a:`Modern way to handle multiple arguments as a <b>real array</b>. Must be the <span class="highlight">last parameter</span>.<br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "Rest Parameters (...)?",
+    a: `Modern way to handle multiple arguments as a <b>real array</b>. Must be the <span class="highlight">last parameter</span>.<br>
     <div class="code-block"><span class="kw">function</span> <span class="fn">sum</span>(...numbers) {
   <span class="kw">return</span> numbers.<span class="fn">reduce</span>((a, b) =&gt; a + b);
-}</div>` },
+}</div>`,
+  },
 
-  { topic:"fns", tags:["core"],
-    q:"What does function.length represent?",
-    a:`Returns the number of <b>expected parameters</b> (excluding rest parameters and parameters with default values).<br>
+  {
+    topic: "fns",
+    tags: ["core"],
+    q: "What does function.length represent?",
+    a: `Returns the number of <b>expected parameters</b> (excluding rest parameters and parameters with default values).<br>
     <div class="code-block"><span class="kw">function</span> <span class="fn">foo</span>(a, b = <span class="num">1</span>, ...c) {}
-console.<span class="fn">log</span>(foo.length); <span class="cm">// 1 (only 'a' is required)</span></div>` },
+console.<span class="fn">log</span>(foo.length); <span class="cm">// 1 (only 'a' is required)</span></div>`,
+  },
 
-  { topic:"array", tags:["core"],
-    q:"map() vs filter() vs reduce()?",
-    a:`<div class="code-block">[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>].<span class="fn">map</span>(x =&gt; x*<span class="num">2</span>)         <span class="cm">// [2,4,6] — transforms, same length</span>
+  {
+    topic: "array",
+    tags: ["core"],
+    q: "map() vs filter() vs reduce()?",
+    a: `<div class="code-block">[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>].<span class="fn">map</span>(x =&gt; x*<span class="num">2</span>)         <span class="cm">// [2,4,6] — transforms, same length</span>
 [<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>].<span class="fn">filter</span>(x =&gt; x &gt; <span class="num">1</span>)    <span class="cm">// [2,3]  — keeps truthy, shorter</span>
 [<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>].<span class="fn">reduce</span>((a,c)=&gt;a+c, <span class="num">0</span>) <span class="cm">// 6     — accumulates to 1 value</span></div>
-    None mutate the original array.` },
+    None mutate the original array.`,
+  },
 
-  { topic:"array", tags:["gotcha"],
-    q:"Mutating vs Non-mutating array methods?",
-    html:`<table class="cmp-table">
+  {
+    topic: "array",
+    tags: ["gotcha"],
+    q: "Mutating vs Non-mutating array methods?",
+    html: `<table class="cmp-table">
       <tr><th>Mutating (changes original)</th><th>Non-mutating (returns new)</th></tr>
       <tr><td><code>push, pop, shift, unshift</code></td><td><code>map, filter, reduce</code></td></tr>
       <tr><td><code>splice, sort, reverse</code></td><td><code>slice, concat, flat</code></td></tr>
       <tr><td><code>fill, copyWithin</code></td><td><code>find, findIndex, every, some</code></td></tr>
     </table>
-    <div style="margin-top:8px;font-size:12px;color:#9ca3af"><span class="warn-text">Gotcha:</span> <code>sort()</code> mutates in place AND coerces to string by default. Always pass a comparator: <code>.sort((a,b) => a-b)</code></div>` },
+    <div style="margin-top:8px;font-size:12px;color:#9ca3af"><span class="warn-text">Gotcha:</span> <code>sort()</code> mutates in place AND coerces to string by default. Always pass a comparator: <code>.sort((a,b) => a-b)</code></div>`,
+  },
 
-  { topic:"array", tags:["core"],
-    q:"find vs findIndex vs indexOf?",
-    a:`&bull; <code>find(fn)</code> → returns <b>element</b> where fn is truthy, or <code>undefined</code><br>
+  {
+    topic: "array",
+    tags: ["core"],
+    q: "find vs findIndex vs indexOf?",
+    a: `&bull; <code>find(fn)</code> → returns <b>element</b> where fn is truthy, or <code>undefined</code><br>
     &bull; <code>findIndex(fn)</code> → returns <b>index</b>, or <code>-1</code><br>
     &bull; <code>indexOf(val)</code> → finds by <b>strict equality</b>, returns index or <code>-1</code><br>
-    &bull; <code>includes(val)</code> → returns boolean` },
+    &bull; <code>includes(val)</code> → returns boolean`,
+  },
 
-  { topic:"obj", tags:["gotcha"],
-    q:"Shallow copy vs Deep copy?",
-    a:`<b>Shallow</b>: copies top-level only, nested objects are references.<br>
+  {
+    topic: "obj",
+    tags: ["gotcha"],
+    q: "Shallow copy vs Deep copy?",
+    a: `<b>Shallow</b>: copies top-level only, nested objects are references.<br>
     <code>Object.assign({}, obj)</code> or <code>{...obj}</code> — both shallow<br><br>
     <b>Deep copy options:</b><br>
     &bull; <code>JSON.parse(JSON.stringify(obj))</code> — loses functions/dates/undefined<br>
     &bull; <code>structuredClone(obj)</code> — modern, handles most types<br>
-    &bull; <code>_.cloneDeep(obj)</code> — lodash` },
+    &bull; <code>_.cloneDeep(obj)</code> — lodash`,
+  },
 
-  { topic:"obj", tags:["core"],
-    q:"Optional chaining & Nullish coalescing?",
-    a:`<div class="code-block">obj?.a?.b?.c         <span class="cm">// undefined instead of TypeError</span>
+  {
+    topic: "obj",
+    tags: ["core"],
+    q: "Optional chaining & Nullish coalescing?",
+    a: `<div class="code-block">obj?.a?.b?.c         <span class="cm">// undefined instead of TypeError</span>
 arr?.[0]             <span class="cm">// safe index access</span>
 fn?.()               <span class="cm">// safe fn call</span>
 
 val ?? <span class="str">'default'</span>    <span class="cm">// default only if null/undefined</span>
 val || <span class="str">'default'</span>    <span class="cm">// default if falsy (0, '', false too!)</span></div>
-    <span class="warn-text">Key diff:</span> <code>??</code> is safer than <code>||</code> for numbers/booleans` },
+    <span class="warn-text">Key diff:</span> <code>??</code> is safer than <code>||</code> for numbers/booleans`,
+  },
 
-  { topic:"obj", tags:["core"],
-    q:"Destructuring tricks?",
-    a:`<div class="code-block"><span class="cm">// Rename + default</span>
+  {
+    topic: "obj",
+    tags: ["core"],
+    q: "Destructuring tricks?",
+    a: `<div class="code-block"><span class="cm">// Rename + default</span>
 <span class="kw">const</span> {name: alias = <span class="str">'anon'</span>, age = <span class="num">0</span>} = obj;
 
 <span class="cm">// Nested</span>
@@ -347,43 +466,58 @@ val || <span class="str">'default'</span>    <span class="cm">// default if fals
 <span class="kw">function</span> <span class="fn">fn</span>({name=<span class="str">'x'</span>, age=<span class="num">0</span>}={}) {}
 
 <span class="cm">// Array destructuring + skip</span>
-<span class="kw">const</span> [first,,third] = [<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>];</div>` },
+<span class="kw">const</span> [first,,third] = [<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>];</div>`,
+  },
 
-  { topic:"misc", tags:["gotcha"],
-    q:"== vs === and type coercion traps?",
-    a:`<div class="code-block"><span class="num">0</span> == <span class="kw">false</span>          <span class="cm">// true  (coercion)</span>
+  {
+    topic: "misc",
+    tags: ["gotcha"],
+    q: "== vs === and type coercion traps?",
+    a: `<div class="code-block"><span class="num">0</span> == <span class="kw">false</span>          <span class="cm">// true  (coercion)</span>
 <span class="num">0</span> === <span class="kw">false</span>         <span class="cm">// false</span>
 <span class="str">''</span> == <span class="kw">false</span>         <span class="cm">// true</span>
 <span class="kw">null</span> == <span class="kw">undefined</span>   <span class="cm">// true</span>
 <span class="kw">null</span> === <span class="kw">undefined</span>  <span class="cm">// false</span>
 <span class="kw">NaN</span> == <span class="kw">NaN</span>          <span class="cm">// false! (NaN !== anything)</span></div>
-    <span class="highlight">Always use ===</span>` },
+    <span class="highlight">Always use ===</span>`,
+  },
 
-  { topic:"misc", tags:["gotcha"],
-    q:"Truthy & Falsy values?",
-    a:`<b>Falsy</b> (6 values): <code>false</code> <code>0</code> <code>-0</code> <code>0n</code> <code>""</code> <code>null</code> <code>undefined</code> <code>NaN</code><br>
+  {
+    topic: "misc",
+    tags: ["gotcha"],
+    q: "Truthy & Falsy values?",
+    a: `<b>Falsy</b> (6 values): <code>false</code> <code>0</code> <code>-0</code> <code>0n</code> <code>""</code> <code>null</code> <code>undefined</code> <code>NaN</code><br>
     <b>Truthy</b>: everything else — including <code>[]</code> <code>{}</code> <code>"0"</code> <code>"false"</code><br>
-    <span class="warn-text">Trap:</span> <code>Boolean([])</code> → <code>true</code> but <code>[] == false</code> → <code>true</code> (coercion)` },
+    <span class="warn-text">Trap:</span> <code>Boolean([])</code> → <code>true</code> but <code>[] == false</code> → <code>true</code> (coercion)`,
+  },
 
-  { topic:"misc", tags:["gotcha"],
-    q:"typeof gotchas?",
-    a:`<div class="code-block"><span class="kw">typeof</span> <span class="kw">null</span>        <span class="cm">// 'object'  (historic bug!)</span>
+  {
+    topic: "misc",
+    tags: ["gotcha"],
+    q: "typeof gotchas?",
+    a: `<div class="code-block"><span class="kw">typeof</span> <span class="kw">null</span>        <span class="cm">// 'object'  (historic bug!)</span>
 <span class="kw">typeof</span> []          <span class="cm">// 'object'  (use Array.isArray())</span>
 <span class="kw">typeof</span> <span class="kw">function</span>(){} <span class="cm">// 'function'</span>
 <span class="kw">typeof</span> <span class="kw">NaN</span>         <span class="cm">// 'number'  (!)</span>
-<span class="kw">typeof</span> undeclaredVar <span class="cm">// 'undefined' (no error)</span></div>` },
+<span class="kw">typeof</span> undeclaredVar <span class="cm">// 'undefined' (no error)</span></div>`,
+  },
 
-  { topic:"misc", tags:["core"],
-    q:"Debounce vs Throttle?",
-    a:`<b>Debounce</b>: waits N ms after <b>last call</b>. Resets timer on each call.<br>
+  {
+    topic: "misc",
+    tags: ["core"],
+    q: "Debounce vs Throttle?",
+    a: `<b>Debounce</b>: waits N ms after <b>last call</b>. Resets timer on each call.<br>
     &bull; Use for: search input, window resize<br><br>
     <b>Throttle</b>: allows max once per N ms regardless of calls.<br>
     &bull; Use for: scroll handler, mousemove, rate-limiting API calls<br>
-    Both optimize performance by limiting function call rate.` },
+    Both optimize performance by limiting function call rate.`,
+  },
 
-  { topic:"misc", tags:["core"],
-    q:"Memoization?",
-    a:`Cache fn results keyed by arguments. Return cached value on repeat calls.<br>
+  {
+    topic: "misc",
+    tags: ["core"],
+    q: "Memoization?",
+    a: `Cache fn results keyed by arguments. Return cached value on repeat calls.<br>
     Trades <b>memory for speed</b>. Good for pure functions with expensive computation.
     <div class="code-block"><span class="kw">function</span> <span class="fn">memoize</span>(fn) {
   <span class="kw">const</span> cache = <span class="kw">new</span> Map();
@@ -394,35 +528,45 @@ val || <span class="str">'default'</span>    <span class="cm">// default if fals
     cache.<span class="fn">set</span>(key, result);
     <span class="kw">return</span> result;
   };
-}</div>` },
+}</div>`,
+  },
 
-  { topic:"dom", tags:["core"],
-    q:"Event bubbling vs capturing?",
-    a:`<b>Bubbling</b> (default): event travels child → parent → root.<br>
+  {
+    topic: "dom",
+    tags: ["core"],
+    q: "Event bubbling vs capturing?",
+    a: `<b>Bubbling</b> (default): event travels child → parent → root.<br>
     <b>Capturing</b>: root → parent → child. Enable with: <code>addEventListener(e, fn, true)</code><br>
     <code>e.stopPropagation()</code> — stops bubbling<br>
-    <code>e.preventDefault()</code> — prevents default browser action (not same as stopPropagation)` },
+    <code>e.preventDefault()</code> — prevents default browser action (not same as stopPropagation)`,
+  },
 
-  { topic:"dom", tags:["core"],
-    q:"Event Delegation?",
-    a:`Attach <b>one listener to parent</b> instead of many on children. Works because events bubble.<br>
+  {
+    topic: "dom",
+    tags: ["core"],
+    q: "Event Delegation?",
+    a: `Attach <b>one listener to parent</b> instead of many on children. Works because events bubble.<br>
     Use <code>event.target</code> to identify which child was clicked.<br>
     <b>Benefits:</b> better performance, handles dynamically added elements automatically.
     <div class="code-block">ul.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, (e) =&gt; {
   <span class="kw">if</span>(e.target.matches(<span class="str">'li'</span>)) {
     <span class="cm">// handle li click</span>
   }
-});</div>` },
+});</div>`,
+  },
 
-  { topic:"dom", tags:["core"],
-    q:"localStorage vs sessionStorage vs Cookie?",
-    html:`<table class="cmp-table">
+  {
+    topic: "dom",
+    tags: ["core"],
+    q: "localStorage vs sessionStorage vs Cookie?",
+    html: `<table class="cmp-table">
       <tr><th></th><th>localStorage</th><th>sessionStorage</th><th>Cookie</th></tr>
       <tr><td>Persistence</td><td>Until cleared</td><td>Tab close</td><td>Expiry date</td></tr>
       <tr><td>Size</td><td>~5MB</td><td>~5MB</td><td>~4KB</td></tr>
       <tr><td>Server access</td><td>No</td><td>No</td><td>Yes (HTTP header)</td></tr>
       <tr><td>Cross-tab</td><td>Yes</td><td>No</td><td>Yes</td></tr>
-    </table>` },
+    </table>`,
+  },
 ];
 
 let activeTopic = "all";
@@ -430,19 +574,26 @@ let activeTopic = "all";
 function buildTags() {
   const row = document.getElementById("tags-row");
   if (!row) return; // Guard for script execution timing
-  const all = [{ id:"all", label:"All" }, ...TOPICS];
-  row.innerHTML = all.map(t => {
-    const cls = activeTopic === t.id ? `tag-btn active-${t.id}` : "tag-btn";
-    return `<button class="${cls}" onclick="setTopic('${t.id}')">${t.label}</button>`;
-  }).join("");
+  const all = [{ id: "all", label: "All" }, ...TOPICS];
+  row.innerHTML = all
+    .map((t) => {
+      const cls = activeTopic === t.id ? `tag-btn active-${t.id}` : "tag-btn";
+      return `<button class="${cls}" onclick="setTopic('${t.id}')">${t.label}</button>`;
+    })
+    .join("");
 }
 
 function buildSidebar() {
   const sb = document.getElementById("sidebar");
   if (!sb) return;
-  sb.innerHTML = TOPICS.map(t => {
-    const count = DATA.filter(d => d.topic === t.id).length;
-    const cls = activeTopic === t.id || activeTopic === "all" ? "" : (activeTopic !== t.id ? " style='opacity:0.4'" : "");
+  sb.innerHTML = TOPICS.map((t) => {
+    const count = DATA.filter((d) => d.topic === t.id).length;
+    const cls =
+      activeTopic === t.id || activeTopic === "all"
+        ? ""
+        : activeTopic !== t.id
+          ? " style='opacity:0.4'"
+          : "";
     return `<div class="sidebar-item${activeTopic === t.id ? " active" : ""}" onclick="setTopic('${t.id}')"${cls}>
       <span class="sidebar-dot" style="background:${t.color}"></span>
       <span>${t.label}</span>
@@ -452,21 +603,24 @@ function buildSidebar() {
 }
 
 function buildMain() {
-  const query = document.getElementById("search")?.value.trim().toLowerCase() || "";
+  const query =
+    document.getElementById("search")?.value.trim().toLowerCase() || "";
   const main = document.getElementById("main");
   if (!main) return;
   let totalCards = 0;
 
-  const topicsToShow = activeTopic === "all" ? TOPICS : TOPICS.filter(t => t.id === activeTopic);
+  const topicsToShow =
+    activeTopic === "all" ? TOPICS : TOPICS.filter((t) => t.id === activeTopic);
 
   let html = "";
-  topicsToShow.forEach(t => {
-    let items = DATA.filter(d => d.topic === t.id);
+  topicsToShow.forEach((t) => {
+    let items = DATA.filter((d) => d.topic === t.id);
     if (query) {
-      items = items.filter(d =>
-        d.q.toLowerCase().includes(query) ||
-        (d.a || "").toLowerCase().includes(query) ||
-        (d.html || "").toLowerCase().includes(query)
+      items = items.filter(
+        (d) =>
+          d.q.toLowerCase().includes(query) ||
+          (d.a || "").toLowerCase().includes(query) ||
+          (d.html || "").toLowerCase().includes(query),
       );
     }
     if (!items.length) return;
@@ -478,10 +632,10 @@ function buildMain() {
         <span class="section-count">${items.length} cards</span>
       </div>
       <div class="cards-grid">`;
-    items.forEach(item => {
-      const tagsHtml = item.tags.map(tag =>
-        `<span class="pill pill-${tag}">${tag}</span>`
-      ).join("");
+    items.forEach((item) => {
+      const tagsHtml = item.tags
+        .map((tag) => `<span class="pill pill-${tag}">${tag}</span>`)
+        .join("");
       const body = item.html || `<div class="card-a">${item.a}</div>`;
       html += `<div class="card">
         <div class="card-q">${item.q}</div>
