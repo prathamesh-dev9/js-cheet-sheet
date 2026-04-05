@@ -257,15 +257,33 @@ c.count; <span class="cm">// undefined — no access</span></div>`,
   {
     topic: "async",
     tags: ["core"],
-    q: "How does the Event Loop work?",
-    a: `<div class="code-block"><span class="cm">// Order of execution:</span>
-<span class="num">1</span>. Sync code runs on <b>Call Stack</b>
-<span class="num">2</span>. Async ops (setTimeout, fetch) → <b>Web APIs</b>
-<span class="num">3</span>. When done → callbacks go to queues:
-   &bull; Promises → <b>Microtask Queue</b> (higher priority)
-   &bull; setTimeout/setInterval → <b>Callback Queue</b>
-<span class="num">4</span>. <b>Event Loop</b>: when stack is empty →
-   drain ALL microtasks → ONE macrotask → repeat</div>`,
+    q: "Browser Event Loop: Step-by-Step Cycle?",
+    a: `<div class="code-block"><span class="cm">// The 4-stage cycle:</span>
+<span class="num">1</span>. <b>Clear Call Stack</b>: Execute ALL synchronous code.
+<span class="num">2</span>. <b>Drain Microtask Queue</b>: Process ALL pending 
+   promises/queueMicrotask (even if new ones are added!)
+<span class="num">3</span>. <b>Render Lifecycle</b>: Browser evaluates layout, 
+   style, and paint (runs <code>requestAnimationFrame</code>).
+<span class="num">4</span>. <b>Run ONE Macrotask</b>: Pick the oldest task 
+   from Callback Queue (setTimeout, events).</div>`,
+  },
+
+  {
+    topic: "async",
+    tags: ["core"],
+    q: "Microtask vs Macrotask?",
+    a: `&bull; <span class="highlight">Microtasks</span>: Promises (.then/.catch/finally), <code>queueMicrotask</code>, <code>MutationObserver</code>.
+    &bull; <span class="highlight">Macrotasks</span>: <code>setTimeout</code>, <code>setInterval</code>, I/O, UI rendering events.
+    &bull; <span class="warn-text">Key priority:</span> ALL pending microtasks are drained before ONE macrotask is executed.`,
+  },
+
+  {
+    topic: "async",
+    tags: ["gotcha"],
+    q: "Microtask Starvation?",
+    a: `If a microtask recursively adds more microtasks, the engine <b>never reaches the macrotask or rendering</b>.
+    &bull; <span class="danger-text">Result:</span> Use for complex heavy recursion can freeze the UI completely.
+    &bull; Macrotasks (like <code>setTimeout</code>) only run ONE per loop, allowing the renderer to "breathe".`,
   },
 
   {
@@ -279,6 +297,21 @@ console.log(<span class="str">'4'</span>); <span class="cm">// sync</span>
 
 <span class="cm">// Output: 1 → 4 → 3 → 2</span></div>
     <span class="warn-text">Key rule:</span> <code>Promise.then</code> ALWAYS runs before <code>setTimeout(fn, 0)</code>`,
+  },
+
+  {
+    topic: "async",
+    tags: ["core", "gotcha"],
+    q: "Tricky Execution Quiz — what is the output?",
+    a: `<div class="code-block">console.<span class="fn">log</span>(<span class="str">'1'</span>);
+<span class="fn">setTimeout</span>(()=&gt;console.<span class="fn">log</span>(<span class="str">'2'</span>), <span class="num">0</span>);
+<span class="fn">Promise.resolve</span>().<span class="fn">then</span>(()=&gt;console.<span class="fn">log</span>(<span class="str">'3'</span>));
+<span class="fn">queueMicrotask</span>(()=&gt;console.<span class="fn">log</span>(<span class="str">'4'</span>));
+<span class="fn">requestAnimationFrame</span>(()=&gt;console.<span class="fn">log</span>(<span class="str">'5'</span>));
+console.<span class="fn">log</span>(<span class="str">'6'</span>);
+
+<span class="cm">// Answer: 1 → 6 → 3 → 4 → 5 → 2</span></div>
+    <span class="info-text">Explain:</span> 1,6 are sync → 3,4 are microtasks → 5 is rAF (before render) → 2 is macrotask.`,
   },
 
   {
