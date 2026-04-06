@@ -8,13 +8,13 @@ const TOPICS = [
   { id: "fns", label: "Functions", color: "#818cf8" },
   { id: "callback", label: "Callbacks", color: "#6366f1" },
   { id: "promise", label: "Promises", color: "#f59e0b" },
+  { id: "async-await", label: "Async/Await (Deep Dive)", color: "#10b981" },
   { id: "array", label: "Array Methods", color: "#fbbf24" },
   { id: "obj", label: "Objects", color: "#60a5fa" },
   { id: "misc", label: "JS Concepts", color: "#f472b6" },
   { id: "dom", label: "Browser / DOM", color: "#6ee7b7" },
   { id: "mem", label: "Memory & GC", color: "#f472b6" },
   { id: "polyfill", label: "Polyfills", color: "#10b981" },
-  { id: "async-await", label: "Async/Await (Deep Dive)", color: "#10b981" },
 ];
 
 const DATA = [
