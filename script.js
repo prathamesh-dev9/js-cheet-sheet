@@ -14,6 +14,7 @@ const TOPICS = [
   { id: "dom", label: "Browser / DOM", color: "#6ee7b7" },
   { id: "mem", label: "Memory & GC", color: "#f472b6" },
   { id: "polyfill", label: "Polyfills", color: "#10b981" },
+  { id: "async-await", label: "Async/Await (Deep Dive)", color: "#10b981" },
 ];
 
 const DATA = [
@@ -467,14 +468,12 @@ console.<span class="fn">log</span>(<span class="str">'6'</span>);
   {
     topic: "promise",
     tags: ["core", "gotcha"],
-    q: "async/await — how it works & common mistakes?",
+    q: "async/await — quick overview?",
     a: `
-    &bull; <code>async fn</code> always returns a Promise
-    <br /> &bull; <code>await</code> pauses <b>only that fn</b>, not the thread
-    <br /> &bull; Syntactic sugar over <code>.then()</code> chains
-    <br /> &bull; Use <code>try/catch</code> for error handling
-    <span class="warn-text">Mistake:</span> Forgetting <code>await</code> → get Promise object, not value
-    <span class="warn-text">Mistake:</span> <code>await</code> in forEach doesn't work — use <code>for...of</code> loop`,
+    &bull; Syntactic sugar over Promises that makes code look synchronous.
+    <br /> &bull; <b>Rule 1:</b> <code>async</code> fns always return Promises.
+    <br /> &bull; <b>Rule 2:</b> <code>await</code> only works inside <code>async</code> fns.
+    <br /> &bull; <span class="highlight">See 'Async/Await (Deep Dive)' section for high-level details on call-stack suspension.</span>`,
   },
 
   {
@@ -1051,6 +1050,107 @@ val || <span class="str">'default'</span> <span class="cm">// default if falsy (
   <span class="kw">function</span> <span class="fn">F</span>() {}
   F.prototype = proto;
   <span class="kw">return</span> <span class="kw">new</span> <span class="fn">F</span>();
+}</div>`,
+  },
+
+  {
+    topic: "async-await",
+    tags: ["core"],
+    q: "What is an async function?",
+    a: `
+    &bull; <span class="highlight">Always returns a Promise</span>. 
+    <br /> &bull; If you return a value (like "Hello"), it wraps it in a Promise automatically.
+    <br /> &bull; If you return a Promise already, it returns that Promise as is.
+    <div class="code-block"><span class="kw">async function</span> <span class="fn">getData</span>() { 
+  <span class="kw">return</span> <span class="str">"Namaste"</span>; 
+} 
+<span class="kw">const</span> data = <span class="fn">getData</span>(); 
+console.<span class="fn">log</span>(data); <span class="cm">// Promise {&lt;fulfilled&gt;: "Namaste"}</span></div>`,
+  },
+
+  {
+    topic: "async-await",
+    tags: ["core"],
+    q: "What is 'await' and how does it work?",
+    a: `
+    &bull; It is a keyword used <span class="warn-text">only inside</span> an async function.
+    <br /> &bull; It <b>pauses</b> the execution of the async function until the Promise is settled (resolved/rejected).
+    <br /> &bull; To the user, it looks like synchronous code, but it's actually non-blocking for the main thread.
+    <div class="code-block"><span class="kw">const</span> val = <span class="kw">await</span> pr; <span class="cm">// JS engine waits for pr to resolve</span></div>`,
+  },
+
+  {
+    topic: "async-await",
+    tags: ["core", "gotcha"],
+    q: "Async/Await vs Promise.then() ?",
+    a: `
+    &bull; <b>Readability</b>: Async/await avoids "Promise Chaining" and "Callback Hell" style nesting.
+    <br /> &bull; <b>Wait behavior</b>: In <code>.then()</code>, JS doesn't wait; it moves to the next line. In <code>await</code>, execution <b>actually suspends</b> at that line.
+    <div class="code-block"><span class="cm">// Promise.then: fn continues immediately</span>
+<span class="kw">function</span> <span class="fn">handle</span>() {
+  pr.<span class="fn">then</span>(res =&gt; console.<span class="fn">log</span>(res));
+  console.<span class="fn">log</span>(<span class="str">"Runs first!"</span>);
+}</div>`,
+  },
+
+  {
+    topic: "async-await",
+    tags: ["core"],
+    q: "Execution suspension: Behind the Scenes?",
+    a: `
+    &bull; When JS hits <code>await</code>, the function is <span class="highlight">suspended</span> and <b>popped off</b> the Call Stack.
+    <br /> &bull; The JS Engine doesn't block; it continues other tasks.
+    <br /> &bull; Once the Promise resolves, the function is <b>pushed back</b> to the Call Stack to continue from where it left off.
+    <br /> &bull; This "suspense" is why we don't need `.then()` callbacks anymore.`,
+  },
+
+  {
+    topic: "async-await",
+    tags: ["core", "gotcha"],
+    q: "Sequential vs Parallel Await (Performance)?",
+    a: `
+    <div class="code-block"><span class="cm">// Sequential: Takes 10s (5s + 5s)</span>
+<span class="kw">async function</span> <span class="fn">seq</span>() {
+  <span class="kw">await</span> <span class="fn">fetchData1</span>(); <span class="cm">// 5s</span>
+  <span class="kw">await</span> <span class="fn">fetchData2</span>(); <span class="cm">// 5s</span>
+}
+
+<span class="cm">// Parallel: Takes 5s</span>
+<span class="kw">async function</span> <span class="fn">parallel</span>() {
+  <span class="kw">const</span> [p1, p2] = <span class="kw">await</span> Promise.<span class="fn">all</span>([<span class="fn">fetchData1</span>(), <span class="fn">fetchData2</span>()]);
+}</div>`,
+  },
+
+  {
+    topic: "async-await",
+    tags: ["core"],
+    q: "Real-world fetch example with try/catch?",
+    a: `
+    <div class="code-block"><span class="kw">async function</span> <span class="fn">handleFetch</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(API_URL);
+    <span class="kw">const</span> json = <span class="kw">await</span> res.<span class="fn">json</span>();
+    console.<span class="fn">log</span>(json);
+  } <span class="kw">catch</span> (err) {
+    console.<span class="fn">error</span>(<span class="str">"Fetch Failed"</span>, err);
+  }
+}</div>
+    <span class="info-text">Akshay's Tip:</span> You can also use <code>handleFetch().catch(err => ...)</code> if you don't like nesting <code>try/catch</code> blocks.`,
+  },
+
+  {
+    topic: "async-await",
+    tags: ["gotcha"],
+    q: "Why await in forEach doesn't work?",
+    a: `<code>forEach</code> is a regular function; it doesn't wait for the callback's Promise.
+    <br /> &bull; <span class="danger-text">Result:</span> All iterations fire simultaneously without waiting.
+    <br /> &bull; <b>Fix:</b> Use a <code>for...of</code> loop or <code>Promise.all()</code>.
+    <div class="code-block"><span class="cm">// Incorrect</span>
+arr.<span class="fn">forEach</span>(<span class="kw">async</span> (id) =&gt; <span class="kw">await</span> <span class="fn">dbCall</span>(id));
+
+<span class="cm">// Correct</span>
+<span class="kw">for</span> (<span class="kw">const</span> id <span class="kw">of</span> arr) {
+  <span class="kw">await</span> <span class="fn">dbCall</span>(id);
 }</div>`,
   },
 ];
