@@ -1101,7 +1101,7 @@ console.<span class="fn">log</span>(data); <span class="cm">// Promise {&lt;fulf
     &bull; When JS hits <code>await</code>, the function is <span class="highlight">suspended</span> and <b>popped off</b> the Call Stack.
     <br /> &bull; The JS Engine doesn't block; it continues other tasks.
     <br /> &bull; Once the Promise resolves, the function is <b>pushed back</b> to the Call Stack to continue from where it left off.
-    <br /> &bull; This "suspense" is why we don't need `.then()` callbacks anymore.`,
+    <br /> &bull; This "suspense" is why we don't need <code>.then()</code> callbacks anymore.`,
   },
 
   {
