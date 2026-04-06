@@ -15,6 +15,7 @@ const TOPICS = [
   { id: "dom", label: "Browser / DOM", color: "#6ee7b7" },
   { id: "mem", label: "Memory & GC", color: "#f472b6" },
   { id: "polyfill", label: "Polyfills", color: "#10b981" },
+  { id: "quiz", label: "Output Quiz", color: "#f59e0b" },
 ];
 
 const DATA = [
@@ -1153,9 +1154,1132 @@ arr.<span class="fn">forEach</span>(<span class="kw">async</span> (id) =&gt; <sp
   <span class="kw">await</span> <span class="fn">dbCall</span>(id);
 }</div>`,
   },
+
+  /* ───── OUTPUT QUIZ SECTION ───── */
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["easy"],
+    q: "Guess the output: typeof null vs typeof []",
+    a: `<div class="code-block">console.<span class="fn">log</span>(<span class="kw">typeof</span> <span class="kw">null</span>);
+console.<span class="fn">log</span>(<span class="kw">typeof</span> []);</div>
+    <b>Output:</b> <code>object</code>, <code>object</code><br>
+    <span class="warn-text">Why:</span> <code>typeof null</code> is a historic JS bug. Arrays are also objects in JS. Use <code>Array.isArray()</code> for arrays.`,
+  },
+
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["easy"],
+    q: "Variable Shadowing: what is printed?",
+    a: `<div class="code-block"><span class="kw">let</span> a = <span class="num">10</span>;
+{
+  <span class="kw">let</span> a = <span class="num">20</span>;
+  console.<span class="fn">log</span>(a);
+}
+console.<span class="fn">log</span>(a);</div>
+    <b>Output:</b> <code>20</code>, <code>10</code><br>
+    <span class="highlight">Explain:</span> <code>let</code> is block-scoped. The inner <code>a</code> shadows the outer <code>a</code> only inside the block.`,
+  },
+
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "The classic setTimeout loop trap?",
+    a: `<div class="code-block"><span class="kw">for</span> (<span class="kw">var</span> i = <span class="num">0</span>; i &lt; <span class="num">3</span>; i++) {
+  <span class="fn">setTimeout</span>(() =&gt; console.<span class="fn">log</span>(i), <span class="num">1</span>);
+}</div>
+    <b>Output:</b> <code>3</code>, <code>3</code>, <code>3</code><br>
+    <span class="warn-text">Why:</span> <code>var</code> is function-scoped. By the time <code>setTimeout</code> runs, the loop has finished and <code>i</code> is 3.
+    <br><b>Fix:</b> Use <code>let</code> to create a new binding for each iteration.`,
+  },
+
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Implicit binding loss: what is 'this'?",
+    a: `<div class="code-block"><span class="kw">const</span> obj = {
+  name: <span class="str">'Alice'</span>,
+  greet() { console.<span class="fn">log</span>(<span class="kw">this</span>.name); }
+};
+<span class="kw">const</span> sayHi = obj.greet;
+<span class="fn">sayHi</span>();</div>
+    <b>Output:</b> <code>undefined</code> (or error in strict mode)<br>
+    <span class="warn-text">Why:</span> When <code>obj.greet</code> is assigned to <code>sayHi</code>, it loses its connection to <code>obj</code>. It's called as a plain function.`,
+  },
+
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "Promise vs setTimeout: which runs first?",
+    a: `<div class="code-block">console.<span class="fn">log</span>(<span class="str">'A'</span>);
+<span class="fn">setTimeout</span>(() =&gt; console.<span class="fn">log</span>(<span class="str">'B'</span>), <span class="num">0</span>);
+<span class="fn">Promise.resolve</span>().<span class="fn">then</span>(() =&gt; console.<span class="fn">log</span>(<span class="str">'C'</span>));
+console.<span class="fn">log</span>(<span class="str">'D'</span>);</div>
+    <b>Output:</b> <code>A</code>, <code>D</code>, <code>C</code>, <code>B</code><br>
+    <span class="highlight">Why:</span> Sync code first (A, D) -> Microtasks (C) -> Macrotasks (B).`,
+  },
+
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Complex Event Loop: microtasks inside macrotasks?",
+    a: `<div class="code-block"><span class="fn">setTimeout</span>(() =&gt; {
+  console.<span class="fn">log</span>(<span class="str">'timeout'</span>);
+  <span class="fn">Promise.resolve</span>().<span class="fn">then</span>(() =&gt; console.<span class="fn">log</span>(<span class="str">'promise'</span>));
+}, <span class="num">0</span>);
+
+<span class="fn">Promise.resolve</span>().<span class="fn">then</span>(() =&gt; {
+  console.<span class="fn">log</span>(<span class="str">'outer-promise'</span>);
+});</div>
+    <b>Output:</b> <code>outer-promise</code>, <code>timeout</code>, <code>promise</code><br>
+    <span class="highlight">Why:</span> 
+    1. Outer promise (microtask) runs first.
+    2. Timeout (macrotask) runs next.
+    3. The promise <i>inside</i> the timeout is a new microtask, so it runs immediately after that specific macrotask completes.`,
+  },
+
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Async/Await interleaving: check your depth!",
+    a: `<div class="code-block"><span class="kw">async function</span> <span class="fn">foo</span>() {
+  console.<span class="fn">log</span>(<span class="num">1</span>);
+  <span class="kw">await</span> <span class="fn">bar</span>();
+  console.<span class="fn">log</span>(<span class="num">2</span>);
+}
+<span class="kw">async function</span> <span class="fn">bar</span>() {
+  console.<span class="fn">log</span>(<span class="num">3</span>);
+}
+<span class="fn">foo</span>();
+console.<span class="fn">log</span>(<span class="num">4</span>);</div>
+    <b>Output:</b> <code>1</code>, <code>3</code>, <code>4</code>, <code>2</code><br>
+    <span class="warn-text">Why:</span> 1 and 3 are sync. <code>await</code> pauses <code>foo</code> and returns control to the caller. Then 4 runs. Finally, the remainder of <code>foo</code> (2) is queued as a microtask.`,
+  },
+
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Arrow function 'this' in nested call?",
+    a: `<div class="code-block"><span class="kw">const</span> obj = {
+  n: <span class="num">42</span>,
+  f: <span class="kw">function</span>() {
+    <span class="kw">const</span> arrow = () =&gt; console.<span class="fn">log</span>(<span class="kw text="this">.n);
+    <span class="kw">return</span> arrow;
+  }
+};
+<span class="kw">const</span> fn = obj.<span class="fn">f</span>();
+<span class="fn">fn</span>();</div>
+    <b>Output:</b> <code>42</code><br>
+    <span class="highlight">Deep Dive:</span> The arrow function captures <code>this</code> from its parent lexical scope (the regular function <code>f</code>). Since <code>f</code> was called as <code>obj.f()</code>, its <code>this</code> was <code>obj</code>. The arrow function remembers this forever.`,
+  },
+
+  /* ───── BATCH 1: FUNDAMENTALS & SCOPING ───── */
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["easy"],
+    q: "Guess the output: typeof typeof 1",
+    a: `<b>Output:</b> <code>"string"</code><br>
+    <span class="highlight">Explain:</span> <code>typeof 1</code> returns <code>"number"</code>. Then <code>typeof "number"</code> returns <code>"string"</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Float Precision: 0.1 + 0.2 === 0.3 ?",
+    a: `<b>Output:</b> <code>false</code><br>
+    <span class="warn-text">Why:</span> Floating point math in JS follows IEEE 754. <code>0.1 + 0.2</code> results in <code>0.30000000000000004</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["easy"],
+    q: "Equality: NaN === NaN ?",
+    a: `<b>Output:</b> <code>false</code><br>
+    <span class="info-text">Explain:</span> <code>NaN</code> is the only value in JS that is not equal to itself. Use <code>Number.isNaN()</code> to check.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["hard"],
+    q: "The infamous [ ] == ! [ ] ?",
+    a: `<b>Output:</b> <code>true</code><br>
+    <span class="warn-text">Trap:</span> 
+    1. <code>![]</code> is <code>false</code> (empty array is truthy).
+    2. <code>[] == false</code>: <code>[]</code> is coerced to empty string <code>""</code>.
+    3. <code>"" == false</code>: both coerced to <code>0</code>.
+    4. <code>0 == 0</code> -> <code>true</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["easy"],
+    q: "Coercion: '1' + 2 + 3 vs 1 + 2 + '3' ?",
+    a: `<b>Output:</b> <code>"123"</code> and <code>"33"</code><br>
+    <span class="highlight">Why:</span> <code>+</code> is left-associative. 
+    In the first: <code>('1' + 2)</code> -> <code>"12"</code>, then <code>"12" + 3</code> -> <code>"123"</code>.
+    In the second: <code>(1 + 2)</code> -> <code>3</code>, then <code>3 + "3"</code> -> <code>"33"</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Function vs Var Hoisting priority?",
+    a: `<div class="code-block"><span class="kw">var</span> foo = <span class="num">1</span>;
+<span class="kw">function</span> <span class="fn">foo</span>() {}
+console.<span class="fn">log</span>(<span class="kw">typeof</span> foo);</div>
+    <b>Output:</b> <code>number</code><br>
+    <span class="warn-text">Why:</span> Both are hoisted, but function declarations take priority. However, the subsequent assignment <code>foo = 1</code> overwrites the function reference.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Hoisting: undeclared vs undefined?",
+    a: `<div class="code-block">(<span class="kw">function</span>(){
+  <span class="kw">var</span> a = b = <span class="num">3</span>;
+})();
+console.<span class="fn">log</span>(b);</div>
+    <b>Output:</b> <code>3</code><br>
+    <span class="danger-text">Trap:</span> <code>b = 3</code> creates a global variable because it's not declared with <code>var/let/const</code>. <code>a</code> is local.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Temporal Dead Zone (TDZ) quirk?",
+    a: `<div class="code-block"><span class="kw">let</span> x = <span class="num">1</span>;
+{
+  console.<span class="fn">log</span>(x);
+  <span class="kw">let</span> x = <span class="num">2</span>;
+}</div>
+    <b>Output:</b> <code>ReferenceError</code><br>
+    <span class="warn-text">Why:</span> The inner <code>let x</code> hoists to the top of its block, shadowing the outer <code>x</code>. Accessing it before declaration in that block hits the TDZ.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["easy"],
+    q: "Array(3) vs [3] output?",
+    a: `<b>Output:</b> <code>[empty × 3]</code> and <code>[3]</code><br>
+    <span class="info-text">Explain:</span> <code>Array(3)</code> creates a holey array of length 3. <code>[3]</code> creates an array with one element (3).`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "String behavior: '5' - 3 vs '5' + 3 ?",
+    a: `<b>Output:</b> <code>2</code> and <code>"53"</code><br>
+    <span class="highlight">Why:</span> Minus operator forces numeric conversion. Plus operator triggers string concatenation if any operand is a string.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["easy"],
+    q: "Math: 3 > 2 > 1 ?",
+    a: `<b>Output:</b> <code>false</code><br>
+    <span class="warn-text">Chain trap:</span> <code>(3 > 2)</code> -> <code>true</code>. Then <code>true > 1</code> -> coerced to <code>1 > 1</code> -> <code>false</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Object Key Coercion?",
+    a: `<div class="code-block"><span class="kw">const</span> a = {}, b = {key: <span class="str">'b'</span>}, c = {key: <span class="str">'c'</span>};
+a[b] = <span class="num">123</span>;
+a[c] = <span class="num">456</span>;
+console.<span class="fn">log</span>(a[b]);</div>
+    <b>Output:</b> <code>456</code><br>
+    <span class="warn-text">Why:</span> Object keys are strings. Both <code>b</code> and <code>c</code> are coerced to <code>"[object Object]"</code>. The second assignment overwrites the first.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["hard"],
+    q: "Is subtraction with arrays possible?",
+    a: `<code>[3] - [1]</code><br>
+    <b>Output:</b> <code>2</code><br>
+    <span class="highlight">Explain:</span> Both arrays are coerced to primitives (strings), then to numbers: <code>"3" - "1"</code> -> <code>2</code>.
+    <br><b>Note:</b> <code>[3] + [1]</code> would be <code>"31"</code> (string concat)!`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Deleting variables?",
+    a: `<div class="code-block"><span class="kw">var</span> x = <span class="num">1</span>;
+<span class="kw">delete</span> x;
+console.<span class="fn">log</span>(x);</div>
+    <b>Output:</b> <code>1</code><br>
+    <span class="info-text">Explain:</span> <code>delete</code> only removes properties from objects. It cannot delete variables declared with <code>var/let/const</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["hard"],
+    q: "Function Length property?",
+    a: `<code>console.log((function(a, b = 1, ...c) {}).length)</code><br>
+    <b>Output:</b> <code>1</code><br>
+    <span class="highlight">Explain:</span> <code>.length</code> returns the number of <i>expected</i> parameters. Default parameters and rest parameters are excluded.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Array.map(parseInt) trap?",
+    a: `<code>['1', '7', '11'].map(parseInt)</code><br>
+    <b>Output:</b> <code>[1, NaN, 3]</code><br>
+    <span class="danger-text">Trap:</span> <code>map</code> passes 3 args: <code>(value, index, array)</code>. <code>parseInt</code> takes 2: <code>(string, radix)</code>.
+    <br><code>parseInt('7', 1)</code> -> <code>NaN</code>
+    <br><code>parseInt('11', 2)</code> -> <code>3</code>`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["easy"],
+    q: "Null vs Undefined in Math?",
+    a: `<code>null + 1</code> vs <code>undefined + 1</code><br>
+    <b>Output:</b> <code>1</code> and <code>NaN</code><br>
+    <span class="info-text">Explain:</span> <code>null</code> coerces to <code>0</code>, while <code>undefined</code> coerces to <code>NaN</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["hard"],
+    q: "The binary spread: [...'abc'] ?",
+    a: `<b>Output:</b> <code>['a', 'b', 'c']</code><br>
+    <span class="highlight">Explain:</span> Strings are iterables. The spread operator iterates over the string and creates an array of its characters.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Comma operator in return?",
+    a: `<div class="code-block"><span class="kw">const</span> fn = () =&gt; (<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>);
+console.<span class="fn">log</span>(<span class="fn">fn</span>());</div>
+    <b>Output:</b> <code>3</code><br>
+    <span class="info-text">Explain:</span> The comma operator evaluates each operand from left to right and returns the value of the last operand.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["hard"],
+    q: "Strict mode: assigning to read-only?",
+    a: `<code>"use strict"; const obj = {}; Object.defineProperty(obj, 'x', {value: 10, writable: false}); obj.x = 20;</code><br>
+    <b>Output:</b> <code>TypeError</code><br>
+    <span class="danger-text">Why:</span> In non-strict mode, this fails silently. In strict mode, it throws an error.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Infinite recursion detection?",
+    a: `<code>const f = function g() { return typeof g; }; f();</code><br>
+    <b>Output:</b> <code>"function"</code><br>
+    <span class="highlight">Explain:</span> <code>g</code> is a Named Function Expression. Its name is only visible internally.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["easy"],
+    q: "Boolean coercion: !!'false' ?",
+    a: `<b>Output:</b> <code>true</code><br>
+    <span class="info-text">Explain:</span> Any non-empty string is truthy in JS, regardless of its content.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "isNaN vs Number.isNaN?",
+    a: `<code>isNaN('hello')</code> vs <code>Number.isNaN('hello')</code><br>
+    <b>Output:</b> <code>true</code> and <code>false</code><br>
+    <span class="warn-text">Why:</span> <code>isNaN</code> coerces the value to a number first (resulting in NaN). <code>Number.isNaN</code> only returns true if the value <i>is actually</i> the primitive NaN.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["hard"],
+    q: "Array holes and forEach?",
+    a: `<code>[1, , 3].forEach(x => console.log(x))</code><br>
+    <b>Output:</b> <code>1</code>, <code>3</code> (2 is skipped)<br>
+    <span class="highlight">Explain:</span> Array methods like <code>forEach</code>, <code>map</code>, etc., skip "empty" slots (holes) in the array.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "The power of 0: 0 == '0' vs 0 == [] ?",
+    a: `<b>Output:</b> <code>true</code> and <code>true</code><br>
+    <span class="warn-text">Explain:</span> Both involve coercion. <code>[]</code> becomes <code>""</code>, then <code>0</code>. <code>'0'</code> becomes <code>0</code>.`,
+  },
+
+  /* ───── BATCH 2: 'THIS' & OBJECTS ───── */
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Context: 'this' in simple function (Strict Mode)?",
+    a: `<div class="code-block"><span class="str">"use strict"</span>;
+<span class="kw">function</span> <span class="fn">show</span>() { console.<span class="fn">log</span>(<span class="kw">this</span>); }
+<span class="fn">show</span>();</div>
+    <b>Output:</b> <code>undefined</code><br>
+    <span class="warn-text">Note:</span> In non-strict mode, it would be the <code>window</code> (global) object.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Arrow function 'this' in global scope?",
+    a: `<div class="code-block"><span class="kw">const</span> obj = {
+  fn: () =&gt; console.<span class="fn">log</span>(<span class="kw">this</span>)
+};
+obj.<span class="fn">fn</span>();</div>
+    <b>Output:</b> <code>window</code> (global object)<br>
+    <span class="highlight">Why:</span> Arrow functions do not have their own <code>this</code>. They inherit it from the scope where they are defined (in this case, the global scope).`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Can you re-bind a function?",
+    a: `<div class="code-block"><span class="kw">function</span> <span class="fn">f</span>() { console.<span class="fn">log</span>(<span class="kw">this</span>.name); }
+<span class="kw">const</span> f1 = f.<span class="fn">bind</span>({name: <span class="str">'A'</span>}).<span class="fn">bind</span>({name: <span class="str">'B'</span>});
+<span class="fn">f1</span>();</div>
+    <b>Output:</b> <code>"A"</code><br>
+    <span class="warn-text">Why:</span> A function created by <code>.bind()</code> is permanently bound to the first context provided. Subsequent <code>.bind()</code> calls cannot change it.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "new-ing an arrow function?",
+    a: `<code>const Foo = () => {}; const inst = new Foo();</code><br>
+    <b>Output:</b> <code>TypeError: Foo is not a constructor</code><br>
+    <span class="danger-text">Why:</span> Arrow functions do not have a <code>[[Construct]]</code> internal method and cannot be used with <code>new</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Constructor returning an object?",
+    a: `<div class="code-block"><span class="kw">function</span> <span class="fn">Person</span>() {
+  <span class="kw">this</span>.name = <span class="str">'Alice'</span>;
+  <span class="kw">return</span> { name: <span class="str">'Bob'</span> };
+}
+<span class="kw">const</span> p = <span class="kw">new</span> <span class="fn">Person</span>();
+console.<span class="fn">log</span>(p.name);</div>
+    <b>Output:</b> <code>"Bob"</code><br>
+    <span class="highlight">Explain:</span> If a constructor returns an object, that object is returned instead of the <code>this</code> instance.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Object.create(null) vs {} ?",
+    a: `<div class="code-block"><span class="kw">const</span> a = <span class="fn">Object.create</span>(<span class="kw">null</span>);
+<span class="kw">const</span> b = {};
+console.<span class="fn">log</span>(a.hasOwnProperty);</div>
+    <b>Output:</b> <code>undefined</code><br>
+    <span class="warn-text">Why:</span> <code>Object.create(null)</code> creates an object with no prototype at all, so it lacks built-in methods like <code>hasOwnProperty</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "The __proto__ setter trick?",
+    a: `<div class="code-block"><span class="kw">const</span> a = {};
+<span class="kw">const</span> b = { x: <span class="num">10</span> };
+a.__proto__ = b;
+console.<span class="fn">log</span>(a.x);</div>
+    <b>Output:</b> <code>10</code><br>
+    <span class="info-text">Note:</span> While <code>__proto__</code> works, <code>Object.setPrototypeOf()</code> is the modern standard (though still slow).`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "instanceof check with custom prototype?",
+    a: `<div class="code-block"><span class="kw">function</span> <span class="fn">A</span>() {}
+<span class="kw">const</span> a = <span class="kw">new</span> <span class="fn">A</span>();
+A.prototype = {};
+console.<span class="fn">log</span>(a <span class="kw">instanceof</span> A);</div>
+    <b>Output:</b> <code>false</code><br>
+    <span class="danger-text">Why:</span> <code>instanceof</code> checks if <code>A.prototype</code> is in <code>a</code>'s prototype chain. Since we replaced <code>A.prototype</code> with a NEW object, the link is broken.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Object.freeze vs Object.seal ?",
+    a: `<b>Freeze:</b> Cannot add, delete, OR change properties.<br>
+    <b>Seal:</b> Cannot add or delete, but CAN change existing properties.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Computed property names?",
+    a: `<div class="code-block"><span class="kw">const</span> key = <span class="str">'name'</span>;
+<span class="kw">const</span> obj = { [key]: <span class="str">'JS'</span> };
+console.<span class="fn">log</span>(obj.name);</div>
+    <b>Output:</b> <code>"JS"</code><br>
+    <span class="highlight">Explain:</span> ES6 allows using expressions in brackets as property keys during object creation.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "for...in and inherited properties?",
+    a: `<div class="code-block"><span class="kw">const</span> parent = { a: <span class="num">1</span> };
+<span class="kw">const</span> child = <span class="fn">Object.create</span>(parent);
+child.b = <span class="num">2</span>;
+<span class="kw">for</span> (<span class="kw">let</span> key <span class="kw">in</span> child) { console.<span class="fn">log</span>(key); }</div>
+    <b>Output:</b> <code>b</code>, <code>a</code><br>
+    <span class="warn-text">Note:</span> <code>for...in</code> iterates over enumerable properties in the entire prototype chain. Use <code>Object.keys()</code> for own properties only.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Object.getPrototypeOf of a primitive?",
+    a: `<code>Object.getPrototypeOf('abc') === String.prototype</code><br>
+    <b>Output:</b> <code>true</code><br>
+    <span class="info-text">Explain:</span> Primitives are temporarily coerced to their object wrappers when accessing properties or calling <code>getPrototypeOf</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["easy"],
+    q: "The constructor property?",
+    a: `<code>[].constructor === Array</code><br>
+    <b>Output:</b> <code>true</code><br>
+    <span class="info-text">Explain:</span> Instances inherit a <code>constructor</code> property from their prototype that points back to the class/function.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "in operator vs hasOwnProperty?",
+    a: `<code>'toString' in {}</code> vs <code>({}).hasOwnProperty('toString')</code><br>
+    <b>Output:</b> <code>true</code> and <code>false</code><br>
+    <span class="highlight">Explain:</span> <code>in</code> checks the entire prototype chain, while <code>hasOwnProperty</code> only checks the object itself.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Object.assign mutation?",
+    a: `<div class="code-block"><span class="kw">const</span> target = { a: <span class="num">1</span> };
+<span class="kw">const</span> source = { b: <span class="num">2</span> };
+<span class="fn">Object.assign</span>(target, source);
+console.<span class="fn">log</span>(target);</div>
+    <b>Output:</b> <code>{a: 1, b: 2}</code><br>
+    <span class="warn-text">Note:</span> <code>Object.assign</code> mutates the <i>first</i> argument and also returns it.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "JSON.stringify circular reference?",
+    a: `<div class="code-block"><span class="kw">const</span> obj = {};
+obj.self = obj;
+JSON.<span class="fn">stringify</span>(obj);</div>
+    <b>Output:</b> <code>TypeError: Converting circular structure to JSON</code>`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Function in Object as key?",
+    a: `<div class="code-block"><span class="kw">const</span> fn = () =&gt; {};
+<span class="kw">const</span> obj = { [fn]: <span class="str">'val'</span> };
+console.<span class="fn">log</span>(obj[fn]);</div>
+    <b>Output:</b> <code>"val"</code><br>
+    <span class="highlight">Explain:</span> The function is coerced to its string representation <code>"() => {}"</code> and used as the key.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Shallow copy: Nested modification?",
+    a: `<div class="code-block"><span class="kw">const</span> a = { x: { y: <span class="num">1</span> } };
+<span class="kw">const</span> b = { ...a };
+b.x.y = <span class="num">2</span>;
+console.<span class="fn">log</span>(a.x.y);</div>
+    <b>Output:</b> <code>2</code><br>
+    <span class="warn-text">Why:</span> Spread operator <code>{...a}</code> performs a shallow copy. The nested object <code>x</code> is still a reference shared by both <code>a</code> and <code>b</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Class static method 'this'?",
+    a: `<div class="code-block"><span class="kw">class</span> <span class="fn">C</span> {
+  <span class="kw">static</span> <span class="fn">m</span>() { console.<span class="fn">log</span>(<span class="kw">this</span> === C); }
+}
+C.<span class="fn">m</span>();</div>
+    <b>Output:</b> <code>true</code><br>
+    <span class="highlight">Explain:</span> In a static method, <code>this</code> refers to the class constructor itself, not an instance.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Object property visibility?",
+    a: `<code>Object.keys({a: 1})</code> vs <code>Object.getOwnPropertyNames({a: 1})</code><br>
+    <b>Output:</b> Normally the same, but <code>getOwnPropertyNames</code> also returns non-enumerable properties.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Adding to basic prototypes?",
+    a: `<div class="code-block"><span class="fn">String</span>.prototype.<span class="fn">bold</span> = () =&gt; <span class="str">'*bold*'</span>;
+console.<span class="fn">log</span>(<span class="str">'hi'</span>.<span class="fn">bold</span>());</div>
+    <b>Output:</b> <code>"*bold*"</code><br>
+    <span class="danger-text">Warning:</span> Modifying built-in prototypes is generally considered bad practice (monkey-patching).`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Is Object.prototype the end?",
+    a: `<code>Object.getPrototypeOf(Object.prototype)</code><br>
+    <b>Output:</b> <code>null</code><br>
+    <span class="info-text">Explain:</span> <code>Object.prototype</code> is the ultimate end of the prototype chain.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Comparing two empty objects?",
+    a: `<code>{} === {}</code><br>
+    <b>Output:</b> <code>false</code><br>
+    <span class="warn-text">Why:</span> Objects are compared by reference, not by value. Each <code>{}</code> creates a new unique instance in memory.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Array-like to Array?",
+    a: `<code>Array.from({length: 2}, (_, i) => i)</code><br>
+    <b>Output:</b> <code>[0, 1]</code><br>
+    <span class="highlight">Explain:</span> <code>Array.from</code> can create an array from any object with a <code>length</code> property.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["hard"],
+    q: "The 'with' statement (Legacy)?",
+    a: `<div class="code-block"><span class="kw">const</span> obj = { x: <span class="num">10</span> };
+<span class="kw">with</span> (obj) { console.<span class="fn">log</span>(x); }</div>
+    <b>Output:</b> <code>10</code><br>
+    <span class="danger-text">Avoid:</span> <code>with</code> is deprecated and disallowed in strict mode because it creates ambiguity in the scope chain.`,
+  },
+
+  /* ───── BATCH 3: ASYNC & EVENT LOOP ───── */
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Value vs Promise in .then() ?",
+    a: `<div class="code-block"><span class="fn">Promise.resolve</span>(<span class="num">1</span>)
+  .<span class="fn">then</span>(<span class="fn">Promise.resolve</span>(<span class="num">2</span>))
+  .<span class="fn">then</span>(console.log);</div>
+    <b>Output:</b> <code>1</code><br>
+    <span class="warn-text">Why:</span> <code>.then()</code> expects a function. If you pass a non-function (like another Promise), it is treated as <code>null</code> and the previous value is passed through (identity).`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "Async function without await?",
+    a: `<code>async function f() { return 1; } console.log(f());</code><br>
+    <b>Output:</b> <code>Promise {&lt;fulfilled&gt;: 1}</code><br>
+    <span class="info-text">Explain:</span> <code>async</code> fns ALWAYS return a promise, even if you return a primitive.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Promise.race([]) challenge?",
+    a: `<code>Promise.race([]).then(console.log);</code><br>
+    <b>Output:</b> (No output, hangs forever)<br>
+    <span class="danger-text">Why:</span> <code>Promise.race</code> waits for the *first* promise to settle. If the array is empty, it never settles.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "await-ing a non-promise?",
+    a: `<code>async function f() { const x = await 10; return x; }</code><br>
+    <b>Output:</b> Resolves to <code>10</code><br>
+    <span class="info-text">Explain:</span> <code>await</code> automatically wraps non-promise values in <code>Promise.resolve()</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "try/catch with setTimeout?",
+    a: `<div class="code-block"><span class="kw">try</span> {
+  <span class="fn">setTimeout</span>(() =&gt; { <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">'!'</span>); }, <span class="num">100</span>);
+} <span class="kw">catch</span> (e) {
+  console.<span class="fn">log</span>(<span class="str">'Caught!'</span>);
+}</div>
+    <b>Output:</b> Uncaught Error (Error not caught)<br>
+    <span class="danger-text">Why:</span> By the time the timeout fires, the <code>try/catch</code> block has already finished executing. The error happens in a different task.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "Catch block returning a value?",
+    a: `<div class="code-block"><span class="fn">Promise.reject</span>(<span class="str">'fail'</span>)
+  .<span class="fn">catch</span>(err =&gt; <span class="str">'recovered'</span>)
+  .<span class="fn">then</span>(val =&gt; console.<span class="fn">log</span>(val));</div>
+    <b>Output:</b> <code>"recovered"</code><br>
+    <span class="highlight">Explain:</span> A <code>.catch()</code> block returns a new Promise. If it returns a value, the new Promise is resolved with that value.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Finally block and return values?",
+    a: `<div class="code-block"><span class="fn">Promise.resolve</span>(<span class="num">1</span>)
+  .<span class="fn">finally</span>(() =&gt; <span class="num">2</span>)
+  .<span class="fn">then</span>(val =&gt; console.<span class="fn">log</span>(val));</div>
+    <b>Output:</b> <code>1</code><br>
+    <span class="warn-text">Why:</span> <code>finally</code> is meant for cleanup and side effects. Its return value is ignored unless it throws or returns a rejected promise.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "Promise.all with one primitive?",
+    a: `<code>Promise.all([Promise.resolve(1), 2]).then(console.log)</code><br>
+    <b>Output:</b> <code>[1, 2]</code><br>
+    <span class="info-text">Explain:</span> <code>Promise.all</code> treats non-promises as resolved promises.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "fetch 404 status check?",
+    a: `<div class="code-block"><span class="fn">fetch</span>(<span class="str">'/invalid-url'</span>)
+  .<span class="fn">then</span>(res =&gt; console.<span class="fn">log</span>(<span class="str">'Success'</span>))
+  .<span class="fn">catch</span>(err =&gt; console.<span class="fn">log</span>(<span class="str">'Fail'</span>));</div>
+    <b>Output:</b> <code>"Success"</code><br>
+    <span class="danger-text">Why:</span> <code>fetch</code> only rejects on network errors. HTTP errors (404, 500) still resolve with <code>ok: false</code>. Check <code>res.ok</code> manually.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "Multiple awaits on same promise?",
+    a: `<div class="code-block"><span class="kw">const</span> p = <span class="fn">Promise.resolve</span>(<span class="str">'ok'</span>);
+<span class="kw">async function</span> <span class="fn">run</span>() {
+  console.<span class="fn">log</span>(<span class="kw">await</span> p);
+  console.<span class="fn">log</span>(<span class="kw">await</span> p);
+}</div>
+    <b>Output:</b> <code>"ok"</code>, <code>"ok"</code><br>
+    <span class="highlight">Explain:</span> You can <code>await</code> a promise multiple times. It remembers its settled value.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "queueMicrotask vs .then?",
+    a: `Both schedule tasks to the Microtask Queue. <code>queueMicrotask</code> is a modern, explicit alternative to <code>Promise.resolve().then()</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "Promise.allSettled output snippet?",
+    a: `<code>Promise.allSettled([Promise.resolve(1), Promise.reject(2)])</code><br>
+    <b>Result:</b> <code>[{status: 'fulfilled', value: 1}, {status: 'rejected', reason: 2}]</code>`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "requestAnimationFrame vs setTimeout?",
+    a: `<code>rAF</code> runs before the browser repaints. <code>setTimeout(0)</code> runs as a macrotask whenever the stack is clear. <code>rAF</code> is preferred for animations for smoother results.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "The second arg of .then() ?",
+    a: `<div class="code-block">p.<span class="fn">then</span>(onSuccess, onError)</div>
+    <span class="warn-text">Trap:</span> <code>onError</code> only catches errors from <code>p</code>, not from <code>onSuccess</code>. <code>.catch()</code> at the end is usually better.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Returning await vs returning Promise?",
+    a: `<div class="code-block"><span class="kw">async function</span> <span class="fn">a</span>() { <span class="kw">return await</span> p; }
+<span class="kw">async function</span> <span class="fn">b</span>() { <span class="kw">return</span> p; }</div>
+    <span class="info-text">Note:</span> They behave identically in most cases. However, <code>await</code>ed return creates an extra microtask tick. Use <code>return p</code> unless you need the stack trace from <code>a</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "Promise.any vs Promise.race?",
+    a: `<b>Race:</b> settles with the FIRST settled (success or fail).<br>
+    <b>Any:</b> settles with the FIRST FULFILLED promise. Rejects only if <i>all</i> fail.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Top-level await Error handling?",
+    a: `If a top-level <code>await</code> fails, the entire module fails to load and any dependent modules will not execute. Always wrap top-level <code>await</code> in <code>try/catch</code> if failure is possible.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "AbortController usage?",
+    a: `<div class="code-block"><span class="kw">const</span> controller = <span class="kw">new</span> <span class="fn">AbortController</span>();
+<span class="fn">fetch</span>(url, { signal: controller.signal });
+controller.<span class="fn">abort</span>(); <span class="cm">// cancels the request immediately</span></div>`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Double Promise wrapping?",
+    a: `<code>Promise.resolve(Promise.resolve(1))</code><br>
+    <b>Output:</b> Resolves to <code>1</code><br>
+    <span class="info-text">Explain:</span> Promises are automatically "flattened". Resolving a promise with another promise results in the outer promise adopting the state of the inner one.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "Promise.resolve vs new Promise((res) => res())?",
+    a: `<code>Promise.resolve()</code> is slightly faster/more optimized by engines than creating a new constructor instance manually.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Execution order: sync, micro, macrotask?",
+    a: `<div class="code-block"><span class="fn">setTimeout</span>(() =&gt; console.<span class="fn">log</span>(<span class="str">'A'</span>), <span class="num">0</span>);
+<span class="fn">Promise.resolve</span>().<span class="fn">then</span>(() =&gt; console.<span class="fn">log</span>(<span class="str">'B'</span>));
+console.<span class="fn">log</span>(<span class="str">'C'</span>);</div>
+    <b>Output:</b> <code>C</code>, <code>B</code>, <code>A</code>`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "The hidden thenable?",
+    a: `<div class="code-block"><span class="kw">const</span> p = { then: (res) =&gt; <span class="fn">res</span>(<span class="str">'done'</span>) };
+<span class="kw">await</span> p;</div>
+    <span class="highlight">Explain:</span> <code>await</code> and <code>Promise.resolve</code> will treat any object with a <code>.then()</code> method as a promise (a "thenable").`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Error object serialization?",
+    a: `<code>JSON.stringify(new Error('!'))</code><br>
+    <b>Output:</b> <code>"{}"</code><br>
+    <span class="warn-text">Why:</span> <code>Error</code> properties like <code>message</code> and <code>stack</code> are non-enumerable.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["medium"],
+    q: "Infinite Microtasks loop?",
+    a: `<div class="code-block"><span class="kw">function</span> <span class="fn">loop</span>() {
+  <span class="fn">Promise.resolve</span>().<span class="fn">then</span>(loop);
+}</div>
+    <span class="danger-text">Warning:</span> This will freeze the UI and hang the process. Macrotasks (setTimeout) would allow rendering, but microtasks (promises) starve the main thread.`,
+  },
+  {
+    topic: "quiz",
+    category: "async-event",
+    tags: ["hard"],
+    q: "Promise chain reuse?",
+    a: `<div class="code-block"><span class="kw">const</span> p = <span class="fn">Promise.resolve</span>(<span class="num">1</span>);
+p.<span class="fn">then</span>(v =&gt; v + <span class="num">1</span>);
+p.<span class="fn">then</span>(v =&gt; console.<span class="fn">log</span>(v));</div>
+    <b>Output:</b> <code>1</code><br>
+    <span class="warn-text">Why:</span> <code>p.then()</code> returns a NEW promise. The original <code>p</code> remains resolved with <code>1</code>.`,
+  },
+
+  /* ───── BATCH 4: CLOSURES & MODERN JS ───── */
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "Closure state persistence?",
+    a: `<div class="code-block"><span class="kw">function</span> <span class="fn">init</span>() {
+  <span class="kw">let</span> c = <span class="num">0</span>;
+  <span class="kw">return</span> () =&gt; console.<span class="fn">log</span>(++c);
+}
+<span class="kw">const</span> a = <span class="fn">init</span>(), b = <span class="fn">init</span>();
+<span class="fn">a</span>(); <span class="fn">a</span>(); <span class="fn">b</span>();</div>
+    <b>Output:</b> <code>1</code>, <code>2</code>, <code>1</code><br>
+    <span class="info-text">Explain:</span> Each call to <code>init()</code> creates a new independent lexical environment (scope). <code>a</code> and <code>b</code> have their own <code>c</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "Currying: add(1)(2)(3) implementation?",
+    a: `<div class="code-block"><span class="kw">const</span> add = a =&gt; b =&gt; c =&gt; a + b + c;
+console.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">1</span>)(<span class="num">2</span>)(<span class="num">3</span>));</div>
+    <b>Output:</b> <code>6</code>`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "Infinite Currying: add(1)(2)(3)...() ?",
+    a: `<div class="code-block"><span class="kw">function</span> <span class="fn">add</span>(a) {
+  <span class="kw">return function</span>(b) {
+    <span class="kw">if</span> (b) <span class="kw">return</span> <span class="fn">add</span>(a + b);
+    <span class="kw">return</span> a;
+  }
+}</div>
+    <span class="highlight">Note:</span> Works by returning the function recursively until it's called with no arguments.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "arguments in Arrow functions?",
+    a: `<div class="code-block"><span class="kw">function</span> <span class="fn">outer</span>() {
+  <span class="kw">const</span> inner = () =&gt; console.<span class="fn">log</span>(arguments[<span class="num">0</span>]);
+  <span class="fn">inner</span>();
+}
+<span class="fn">outer</span>(<span class="num">1</span>);</div>
+    <b>Output:</b> <code>1</code><br>
+    <span class="warn-text">Why:</span> Arrow functions don't have their own <code>arguments</code> object; they inherit it from the nearest regular function scope.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "Proxy property interception?",
+    a: `<div class="code-block"><span class="kw">const</span> p = <span class="kw">new</span> <span class="fn">Proxy</span>({}, {
+  get: (target, prop) =&gt; <span class="str">'intercepted'</span>
+});
+console.<span class="fn">log</span>(p.any);</div>
+    <b>Output:</b> <code>"intercepted"</code>`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "Optional chaining with functions?",
+    a: `<code>const obj = {}; console.log(obj.fn?.());</code><br>
+    <b>Output:</b> <code>undefined</code><br>
+    <span class="info-text">Explain:</span> <code>?.()</code> checks if the property before it exists and is a function before calling it.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "Nullish Coalescing with zero?",
+    a: `<code>0 ?? 10</code> vs <code>0 || 10</code><br>
+    <b>Output:</b> <code>0</code> and <code>10</code><br>
+    <span class="warn-text">Why:</span> <code>??</code> only triggers for <code>null/undefined</code>. <code>||</code> triggers for any falsy value (including <code>0</code>).`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "Logical OR assignment (||=) ?",
+    a: `<div class="code-block"><span class="kw">let</span> a = <span class="num">0</span>; a ||= <span class="num">10</span>;</div>
+    <b>Output:</b> <code>a</code> is now <code>10</code><br>
+    <span class="info-text">Explain:</span> <code>a ||= b</code> is equivalent to <code>a || (a = b)</code>. It assigns only if <code>a</code> is falsy.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "BigInt and Numbers mix?",
+    a: `<code>1n + 1</code><br>
+    <b>Output:</b> <code>TypeError: Cannot mix BigInt and other types</code><br>
+    <span class="danger-text">Fix:</span> Use <code>1n + BigInt(1)</code> or <code>Number(1n) + 1</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "The Symbol uniqueness?",
+    a: `<code>Symbol('a') === Symbol('a')</code><br>
+    <b>Output:</b> <code>false</code><br>
+    <span class="highlight">Explain:</span> Every call to <code>Symbol()</code> returns a unique symbol, even with the same description.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "Generator yield and next() values?",
+    a: `<div class="code-block"><span class="kw">function</span>* <span class="fn">gen</span>() {
+  <span class="kw">const</span> x = <span class="kw">yield</span> <span class="str">'a'</span>;
+  console.<span class="fn">log</span>(x);
+}
+<span class="kw">const</span> g = <span class="fn">gen</span>();
+g.<span class="fn">next</span>();
+g.<span class="fn">next</span>(<span class="str">'b'</span>);</div>
+    <b>Output:</b> <code>"b"</code><br>
+    <span class="info-text">Explain:</span> The value passed to the <i>second</i> <code>next()</code> becomes the result of the <i>first</i> <code>yield</code> expression.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "new.target in functions?",
+    a: `<div class="code-block"><span class="kw">function</span> <span class="fn">F</span>() { console.<span class="fn">log</span>(<span class="kw">new</span>.target); }
+<span class="kw">new</span> <span class="fn">F</span>(); <span class="fn">F</span>();</div>
+    <b>Output:</b> <code>F</code> and <code>undefined</code><br>
+    <span class="highlight">Explain:</span> <code>new.target</code> allows you to detect if a function was called with the <code>new</code> keyword.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "Private class fields (#)?",
+    a: `<div class="code-block"><span class="kw">class</span> <span class="fn">C</span> { #p = <span class="num">1</span>; getP() { <span class="kw">return this</span>.#p; } }
+<span class="kw">const</span> i = <span class="kw">new</span> <span class="fn">C</span>();
+console.<span class="fn">log</span>(i.#p);</div>
+    <b>Output:</b> <code>SyntaxError</code><br>
+    <span class="warn-text">Why:</span> Private fields are truly private and cannot be accessed from outside the class body, not even with a dynamic key.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "WeakMap and GC behavior?",
+    a: `<span class="info-text">Conceptual:</span> If an object is used as a key in a <code>WeakMap</code> and there are no other references to it, it can be garbage collected. This is impossible with a regular <code>Map</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "The Symbol.iterator protocol?",
+    a: `<div class="code-block"><span class="kw">const</span> obj = {
+  *[Symbol.iterator]() { <span class="kw">yield</span> <span class="num">1</span>; <span class="kw">yield</span> <span class="num">2</span>; }
+};
+console.<span class="fn">log</span>([...obj]);</div>
+    <b>Output:</b> <code>[1, 2]</code>`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "String.at(-1) vs string[string.length-1] ?",
+    a: `<code>at(-1)</code> is a modern, cleaner way to access the last character of a string or array. It supports negative indexing.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "Function composition (Pipe) concept?",
+    a: `<div class="code-block"><span class="kw">const</span> pipe = (...fns) =&gt; x =&gt; fns.<span class="fn">reduce</span>((v, f) =&gt; <span class="fn">f</span>(v), x);</div>
+    <span class="info-text">Explain:</span> Passes the result of one function as the input to the next.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "Rest parameters must be last?",
+    a: `<code>function f(...a, b) {}</code><br>
+    <b>Output:</b> <code>SyntaxError: Rest parameter must be last</code>`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "Object.entries of a string?",
+    a: `<code>Object.entries('hi')</code><br>
+    <b>Output:</b> <code>[['0', 'h'], ['1', 'i']]</code><br>
+    <span class="info-text">Explain:</span> Strings are coerced to object wrappers where indices are enumerable properties.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "Symbol.toStringTag custom behavior?",
+    a: `<div class="code-block"><span class="kw">const</span> o = { [Symbol.toStringTag]: <span class="str">'MyObj'</span> };
+console.<span class="fn">log</span>(o.<span class="fn">toString</span>());</div>
+    <b>Output:</b> <code>"[object MyObj]"</code>`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "for await...of usage?",
+    a: `<div class="code-block"><span class="kw">async function</span> <span class="fn">f</span>() {
+  <span class="kw">for await</span> (<span class="kw">const</span> x <span class="kw">of</span> asyncIterable) { ... }
+}</div>`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "NaN property on Window?",
+    a: `<code>isNaN === window.isNaN</code> vs <code>Number.isNaN === window.Number.isNaN</code><br>
+    <b>Output:</b> <code>true</code> and <code>true</code><br>
+    <code>isNaN</code> is a global function, <code>Number.isNaN</code> is a static method of <code>Number</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["hard"],
+    q: "Implicit return of an object from arrow function?",
+    a: `<code>const f = () => { x: 1 }; console.log(f());</code><br>
+    <b>Output:</b> <code>undefined</code><br>
+    <span class="danger-text">Trap:</span> The braces are interpreted as a function block, not an object literal. Use <code>() => ({ x: 1 })</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "modern",
+    tags: ["medium"],
+    q: "Deleting a property inherited from prototype?",
+    a: `<div class="code-block"><span class="kw">const</span> p = { x: <span class="num">1</span> };
+<span class="kw">const</span> c = <span class="fn">Object.create</span>(p);
+<span class="kw">delete</span> c.x;
+console.<span class="fn">log</span>(c.x);</div>
+    <b>Output:</b> <code>1</code><br>
+    <span class="warn-text">Why:</span> <code>delete</code> only works on own properties. <code>c.x</code> is still accessible via the prototype chain.`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["hard"],
+    q: "Array constructor with one string arg?",
+    a: `<code>new Array('3')</code> vs <code>new Array(3)</code><br>
+    <b>Output:</b> <code>['3']</code> vs <code>[empty × 3]</code>`,
+  },
 ];
 
 let activeTopic = "all";
+let activeQuizTab = "all";
+
+const QUIZ_CHUNKS = [
+  { id: "all", label: "All" },
+  { id: "fundamentals", label: "Fundamentals" },
+  { id: "this-objects", label: "This & Objects" },
+  { id: "async-event", label: "Async & Event Loop" },
+  { id: "modern", label: "Modern JS" },
+];
 
 function buildTags() {
   const row = document.getElementById("tags-row");
@@ -1211,12 +2335,29 @@ function buildMain() {
     }
     if (!items.length) return;
     totalCards += items.length;
+
+    let subTagsHtml = "";
+    if (t.id === "quiz") {
+      subTagsHtml = `<div class="quiz-tabs">
+        ${QUIZ_CHUNKS.map(
+          (st) => `<button class="quiz-tab${activeQuizTab === st.id ? " active" : ""}" 
+          onclick="setQuizTab('${st.id}')">${st.label}</button>`,
+        ).join("")}
+      </div>`;
+
+      // Filter by sub-tab
+      if (activeQuizTab !== "all") {
+        items = items.filter((item) => item.category === activeQuizTab);
+      }
+    }
+
     html += `<div class="section" id="sec-${t.id}">
       <div class="section-header">
         <span class="section-dot" style="background:${t.color}"></span>
         <span class="section-title">${t.label}</span>
         <span class="section-count">${items.length} cards</span>
       </div>
+      ${subTagsHtml}
       <div class="cards-grid">`;
     items.forEach((item) => {
       const tagsHtml = item.tags
@@ -1226,7 +2367,13 @@ function buildMain() {
               ? "Fundamental concept"
               : tag === "gotcha"
                 ? "Tricky behavior / Common pitfall"
-                : "";
+                : tag === "easy"
+                  ? "Interview Essentials — Basics you must know."
+                  : tag === "medium"
+                    ? "Deep Dive — Understanding internal mechanics."
+                    : tag === "hard"
+                      ? "Senior Level — Edge cases and architectural nuances."
+                      : "";
           return `<span class="pill pill-${tag}" data-tooltip="${desc}">${tag}</span>`;
         })
         .join("");
@@ -1253,8 +2400,14 @@ function buildMain() {
 
 function setTopic(id) {
   activeTopic = id;
+  activeQuizTab = "all"; // Reset quiz tab when switching topics
   buildTags();
   buildSidebar();
+  buildMain();
+}
+
+function setQuizTab(id) {
+  activeQuizTab = id;
   buildMain();
 }
 
