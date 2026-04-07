@@ -276,13 +276,6 @@ sayHi = () =&gt; { console.log(<span class="kw">this</span>.name); }</div>`,
     a: `<div class="code-block"><span class="kw">var</span> name = <span class="str">'Global'</span>;
 <span class="kw">const</span> obj = {
   name: <span class="str">'Local'</span>,
-  sayName() {
-    console.log(<span class="kw">this</span>.name);
-  }
-};
-
-<span class="kw">const</span> fn = obj.sayName;
-obj.sayName(); <span class="cm">// 1?</span>
 fn();          <span class="cm">// 2?</span></div>
     <b>Answers:</b> 1. 'Local' (implicit), 2. 'Global' (lost context/default binding).`,
   },
@@ -1270,7 +1263,7 @@ console.<span class="fn">log</span>(<span class="num">4</span>);</div>
     a: `<div class="code-block"><span class="kw">const</span> obj = {
   n: <span class="num">42</span>,
   f: <span class="kw">function</span>() {
-    <span class="kw">const</span> arrow = () =&gt; console.<span class="fn">log</span>(<span class="kw text="this">.n);
+    <span class="kw">const</span> arrow = () =&gt; console.<span class="fn">log</span>(<span class="kw">this</span>.n);
     <span class="kw">return</span> arrow;
   }
 };
@@ -2168,6 +2161,58 @@ console.<span class="fn">log</span>(i.#p);</div>
     tags: ["medium"],
     q: "WeakMap and GC behavior?",
     a: `<span class="info-text">Conceptual:</span> If an object is used as a key in a <code>WeakMap</code> and there are no other references to it, it can be garbage collected. This is impossible with a regular <code>Map</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["hard"],
+    q: "Tricky 'this' & Constructor context?",
+    a: `<div class="code-block"><span class="kw">var</span> a = <span class="num">200</span>;
+console.<span class="fn">log</span>(<span class="str">"2"</span>, <span class="kw">this</span>.a);
+<span class="kw">function</span> <span class="fn">abc</span>() {
+  console.<span class="fn">log</span>(<span class="str">"3"</span>, <span class="kw">this</span>.a);
+  <span class="kw">var</span> a = <span class="num">20</span>;
+  console.<span class="fn">log</span>(<span class="str">"4"</span>, <span class="kw">this</span>.a);
+}
+<span class="kw">new</span> <span class="fn">abc</span>();
+console.<span class="fn">log</span>(<span class="str">"5"</span>, <span class="kw">this</span>.a);</div>
+    <b>Output:</b> <code>2 200</code>, <code>3 undefined</code>, <code>4 undefined</code>, <code>5 200</code><br>
+    <span class="warn-text">Explain:</span> 
+    1. <code>var a</code> is attached to <code>window</code> (this).
+    2. <code>new abc()</code> creates <code>this</code> as a new object instance. <code>this.a</code> is not defined on the instance yet.
+    3. The local variable <code>var a = 20</code> inside <code>abc</code> is hoisted but NOT attached to <code>this</code>.`,
+  },
+  {
+    topic: "quiz",
+    category: "this-objects",
+    tags: ["medium"],
+    q: "Inner function 'this' context?",
+    a: `<div class="code-block"><span class="kw">var</span> a = <span class="num">10</span>;
+<span class="kw">var</span> obj = {
+  a: <span class="num">20</span>,
+  b: <span class="kw">function</span>() {
+    console.<span class="fn">log</span>(<span class="kw">this</span>.a);
+    <span class="kw">function</span> <span class="fn">c</span>() {
+      console.<span class="fn">log</span>(<span class="kw">this</span>.a);
+    }
+    <span class="fn">c</span>();
+  }
+}
+obj.<span class="fn">b</span>();</div>
+    <b>Output:</b> <code>20</code>, <code>10</code><br>
+    <span class="danger-text">Why:</span> <code>obj.b()</code> uses implicit binding for <code>this</code> (points to <code>obj</code>). However, the plain function call <code>c()</code> defaults <code>this</code> to the global object (window).`,
+  },
+  {
+    topic: "quiz",
+    category: "fundamentals",
+    tags: ["medium"],
+    q: "Global Var vs Global Let?",
+    a: `<div class="code-block"><span class="kw">var</span> a = <span class="num">1</span>;
+<span class="kw">let</span> b = <span class="num">2</span>;
+console.<span class="fn">log</span>(<span class="kw">this</span>.a);
+console.<span class="fn">log</span>(<span class="kw">this</span>.b);</div>
+    <b>Output:</b> <code>1</code>, <code>undefined</code><br>
+    <span class="info-text">Explain:</span> Variables declared with <code>var</code> at the top level become properties of the global object. <code>let</code> and <code>const</code> do not.`,
   },
   {
     topic: "quiz",
